@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de Administración - D&E Shop">
+    <title>Admin Panel - D&E Shop ✨</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Admin Header (simpler) -->
+        <header class="header">
+            <div class="container">
+                <div class="header-inner">
+                    <a href="admin.html" class="logo">
+                        <div class="logo-icon"
+                            style="background: linear-gradient(135deg, var(--menta), var(--menta-hover));">⚙️</div>
+                        Admin Panel
+                    </a>
+                    <div class="header-actions">
+                        <a href="index.html" class="header-btn" title="Ver Tienda">🏠</a>
+                        <button class="header-btn" id="btn-admin-logout" title="Cerrar Sesión"
+                            style="display:none;">🚪</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="admin-root"></div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Nuevo Producto</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <form id="product-form" onsubmit="handleProductSubmit(event)">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label>📝 Nombre del producto</label>
+                    <input type="text" id="pf-name" placeholder="Nombre del producto" required>
+                </div>
+                <div class="form-group">
+                    <label>📄 Descripción</label>
+                    <textarea id="pf-description" rows="3" placeholder="Descripción del producto" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>💰 Precio (RD$)</label>
+                    <input type="number" id="pf-price" placeholder="0" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>💸 Precio anterior (opcional, para descuento)</label>
+                    <input type="number" id="pf-oldprice" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label>📂 Categoría</label>
+                    <select id="pf-category" required></select>
+                </div>
+                <!-- PROVEEDOR OBLIGATORIO -->
+                <div style="padding: 15px; background: #fff7ed; border-radius: 8px; border: 1.5px solid #f59e0b; margin-bottom: 4px;">
+                    <label style="font-weight: 700; color: #92400e; display: block; margin-bottom: 12px;">
+                        🏭 Proveedor <span style="color: #dc2626;">*</span> <span style="font-size: 0.75rem; font-weight: 400; opacity: 0.8;">(Obligatorio para publicar)</span>
+                    </label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label style="font-size: 0.8rem; color: #92400e; margin-bottom: 4px; display: block;">Selecciona el proveedor</label>
+                            <select id="pf-supplier" required style="width: 100%; border-color: #f59e0b;">
+                                <option value="">-- Selecciona proveedor --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: #92400e; margin-bottom: 4px; display: block;">Precio de Costo (RD$)</label>
+                            <input type="number" id="pf-cost" placeholder="0" min="0" step="0.01" required
+                                style="width: 100%; border-color: #f59e0b;">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group"
+                    style="padding: 15px; background: #fdf2f8; border-radius: 8px; border: 1px dashed var(--rosa);">
+                    <label
+                        style="color: var(--rosa-dark); font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        📏 Gestión de Variantes (Talla + Colores)
+                        <button type="button" class="btn btn-sm btn-secondary" id="btn-add-variant"
+                            style="font-size: 0.75rem;">+ Agregar Talla</button>
+                    </label>
+                    <div id="variants-container">
+                        <!-- Variant rows will be here: [Talla Select] [Colors Input] [Remove] -->
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--texto-muted); margin-top: 10px;">
+                        * Selecciona una talla y escribe sus colores (separados por comas). Cada talla tendrá sus
+                        propios colores.
+                    </p>
+                </div>
+
+                <div class="form-grid"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>🔢 Stock Total</label>
+                        <input type="number" id="pf-stock" placeholder="0" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🏷️ Badge (opcional)</label>
+                        <input type="text" id="pf-badge" placeholder="Ej: Nuevo, Popular, -20%">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <div style="padding: 10px 14px; background: #f0f9ff; border-radius: 8px; border: 1px solid #bae6fd; font-size: 0.83rem; color: #0c4a6e;">
+                        🤖 <strong>Productos similares:</strong> Se calculan automáticamente según categoría, proveedor y precio. No necesitas configurarlos manualmente.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>🖼️ URLs de imágenes (Máximo 10)</label>
+                    <div id="image-inputs-container">
+                        <!-- Dynamic inputs will be inserted here -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary mt-1" id="btn-add-image-url">+ Agregar otra
+                        imagen</button>
+                </div>
+                <div class="img-preview-grid" id="img-preview"
+                    style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px;"></div>
+                <div class="mt-2 d-flex gap-1">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Guardar</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal-overlay" id="category-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Nueva Categoría</h2>
+                <button class="modal-close" onclick="closeCategoryModal()">✕</button>
+            </div>
+            <form id="category-form" onsubmit="handleCategorySubmit(event)">
+                <div class="form-group">
+                    <label>📂 Nombre de la categoría</label>
+                    <input type="text" id="cf-name" placeholder="Ej: Accesorios, Invierno..." required>
+                </div>
+                <div class="form-group">
+                    <label>✨ Icono/Emoji</label>
+                    <input type="text" id="cf-emoji" placeholder="Ej: 👒, 🕶️, ⛄" required maxlength="5">
+                </div>
+                <div class="form-group">
+                    <label>🖼️ URL de la Imagen</label>
+                    <input type="url" id="cf-image" placeholder="https://..." required>
+                </div>
+                <div class="mt-2 d-flex gap-1">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Crear Categoría</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supplier Modal -->
+    <div class="modal-overlay" id="supplier-modal">
+        <div class="modal" style="max-width: 580px;">
+            <div class="modal-header">
+                <h2 id="supplier-modal-title">Nuevo Proveedor</h2>
+                <button class="modal-close" onclick="closeSupplierModal()">✕</button>
+            </div>
+            <form id="supplier-form" onsubmit="handleSupplierSubmit(event)">
+                <input type="hidden" id="sf-id">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                    <div class="form-group">
+                        <label>🏭 Nombre del proveedor *</label>
+                        <input type="text" id="sf-name" placeholder="Fantasías Diana" required>
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Persona de contacto</label>
+                        <input type="text" id="sf-contact" placeholder="Diana Rodríguez">
+                    </div>
+                    <div class="form-group">
+                        <label>📧 Email</label>
+                        <input type="email" id="sf-email" placeholder="proveedor@mail.com">
+                    </div>
+                    <div class="form-group">
+                        <label>📱 Teléfono</label>
+                        <input type="tel" id="sf-phone" placeholder="+1 809-000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label>🌍 País</label>
+                        <select id="sf-country">
+                            <option value="DO">🇩🇴 República Dominicana</option>
+                            <option value="CN">🇨🇳 China</option>
+                            <option value="US">🇺🇸 Estados Unidos</option>
+                            <option value="MX">🇲🇽 México</option>
+                            <option value="PA">🇵🇦 Panamá</option>
+                            <option value="CO">🇨🇴 Colombia</option>
+                            <option value="OTHER">🌍 Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>💳 Términos de pago</label>
+                        <input type="text" id="sf-payment" placeholder="Ej: 30 días, contado">
+                    </div>
+                    <div class="form-group">
+                        <label>📈 Comisión / Margen objetivo %</label>
+                        <input type="number" id="sf-commission" placeholder="30" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:24px;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="sf-active" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span style="font-size:0.9rem;">Proveedor Activo</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📝 Notas internas (privado)</label>
+                    <textarea id="sf-notes" rows="2" placeholder="Solo visible para ti..."></textarea>
+                </div>
+                <div class="mt-2 d-flex gap-1">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Guardar Proveedor</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeSupplierModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Link Product Modal -->
+    <div class="modal-overlay" id="link-product-modal">
+        <div class="modal" style="max-width: 480px;">
+            <div class="modal-header">
+                <h2>🔗 Vincular Producto</h2>
+                <button class="modal-close" onclick="closeLinkProductModal()">✕</button>
+            </div>
+            <form id="link-product-form" onsubmit="handleLinkProductSubmit(event)">
+                <input type="hidden" id="lp-supplier-id">
+                <div class="form-group">
+                    <label>🏭 Proveedor</label>
+                    <input type="text" id="lp-supplier-name" readonly style="background:var(--fondo-alt);font-weight:700;">
+                </div>
+                <div class="form-group">
+                    <label>📦 Producto a Vincular</label>
+                    <select id="lp-product-select" required style="width:100%;"></select>
+                </div>
+                <div class="form-group">
+                    <label>💵 Precio de Costo (RD$) *</label>
+                    <input type="number" id="lp-cost" placeholder="0" min="0" step="0.01" required>
+                    <small style="color:var(--texto-muted);">Lo que te cobra el proveedor por unidad</small>
+                </div>
+                <div class="mt-2 d-flex gap-1">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Vincular Producto</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeLinkProductModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="data/seed.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

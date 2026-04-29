@@ -1,0 +1,9 @@
+# TIENDA PRIMERA - Git Ignore
+.gemini/
+.vscode/
+Antigravity/
+scratch/
+*.zip
+node_modules/
+.DS_Store
+Thumbs.db

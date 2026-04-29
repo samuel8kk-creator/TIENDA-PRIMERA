@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="D&E Shop - Tu tienda de moda favorita. Ropa para Mujer, Hombre y Niños con las mejores ofertas.">
+  <title>D&E Shop ✨ | Moda y Estilo</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <div id="header-root"></div>
+
+    <main class="main-content">
+      <div class="container">
+        <!-- Home Hero Section -->
+        <!-- Home Hero Section (Dynamic) -->
+        <div id="home-banners-root"></div>
+
+        <!-- Category Circles Nav -->
+        <div class="category-circles-wrap">
+          <div class="category-circles" id="category-nav"></div>
+        </div>
+
+        <!-- Featured Section Header -->
+        <div class="section-flex-header">
+          <h2 class="section-title-line">PRODUCTOS DESTACADOS</h2>
+          <a href="#products-grid" class="view-all-btn">VER TODO</a>
+        </div>
+
+        <!-- Global Animated Trust Ticker -->
+        <div class="global-trust-ticker">
+          <div class="gtt-road">
+            <span class="gtt-vehicle">🚚</span>
+            <span class="gtt-vehicle" style="animation-delay: -3.5s; font-size: 1.3rem;">🛵</span>
+            <span class="gtt-vehicle" style="animation-delay: -6.5s; font-size: 1.25rem;">🚲</span>
+            <span class="gtt-box" style="animation-delay: -1.5s;">📦</span>
+          </div>
+          <div class="gtt-marquee-wrap">
+            <div class="gtt-marquee">
+              <span>📦 Envío desde <strong>RD$ 150</strong></span>
+              <span class="gtt-sep">✦</span>
+              <span>✅ Pago seguro vía <strong>WhatsApp</strong></span>
+              <span class="gtt-sep">✦</span>
+              <span>🚀 Directo a tu puerta</span>
+              <span class="gtt-sep">✦</span>
+              <span>✨ Define tu estilo</span>
+              <span class="gtt-sep">✦</span>
+              <span>👗 Lo último en tendencia</span>
+              <span class="gtt-sep">✦</span>
+              <span>💎 Calidad que se siente</span>
+              <span class="gtt-sep">✦</span>
+              <span>🌟 Renueva tu clóset con lo mejor de la temporada</span>
+              <span class="gtt-sep">✦</span>
+              <span>🎁 Entregas rápidas y con cariño</span>
+              <span class="gtt-sep">✦</span>
+              <span>🌟 Calidad garantizada</span>
+              <span class="gtt-sep">✦</span>
+              <!-- REPEAT -->
+              <span>📦 Envío desde <strong>RD$ 150</strong></span>
+              <span class="gtt-sep">✦</span>
+              <span>✅ Pago seguro vía <strong>WhatsApp</strong></span>
+              <span class="gtt-sep">✦</span>
+              <span>🚀 Directo a tu puerta</span>
+              <span class="gtt-sep">✦</span>
+              <span>✨ Define tu estilo</span>
+              <span class="gtt-sep">✦</span>
+              <span>👗 Lo último en tendencia</span>
+              <span class="gtt-sep">✦</span>
+              <span>💎 Calidad que se siente</span>
+              <span class="gtt-sep">✦</span>
+              <span>🌟 Renueva tu clóset con lo mejor de la temporada</span>
+              <span class="gtt-sep">✦</span>
+              <span>🎁 Entregas rápidas y con cariño</span>
+              <span class="gtt-sep">✦</span>
+              <span>🌟 Calidad garantizada</span>
+              <span class="gtt-sep">✦</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="products-grid"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="empty-state">
+          <div class="emoji">🔍</div>
+          <h2>No se encontraron productos</h2>
+          <p>Intenta con otra categoría o término de búsqueda.</p>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer-root"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="data/seed.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/lazy-gallery.js"></script>
+  <script src="js/store.js"></script>
+</body>
+
+</html>
