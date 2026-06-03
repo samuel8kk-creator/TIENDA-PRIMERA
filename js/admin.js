@@ -9,20 +9,23 @@ function initAdmin() {
   const root = document.getElementById('admin-root');
   const logoutBtn = document.getElementById('btn-admin-logout');
 
-  // Check if admin is logged in
-  if (!App.isAdminLogged()) {
-    renderLoginScreen();
-    return;
-  }
+  // Check if admin is logged in (Async)
+  App.isAdminLogged().then(isLogged => {
+    if (!isLogged) {
+      renderLoginScreen();
+      return;
+    }
 
-  logoutBtn.style.display = 'flex';
-  logoutBtn.addEventListener('click', () => {
-    App.adminLogout();
-    location.reload();
+    logoutBtn.style.display = 'flex';
+    logoutBtn.addEventListener('click', () => {
+      App.adminLogout();
+      location.reload();
+    });
+
+    renderAdmin();
   });
 
   let activeSection = 'products';
-  renderAdmin();
 
   // ── GLOBAL EVENT DELEGATION ──
   // Listeners moved here to work regardless of login state
@@ -648,6 +651,8 @@ function initAdmin() {
   //  ANALYTICS SECTION
   // ══════════════════════════════════════
   function renderAnalyticsSection(container) {
+    const performanceData = App.getSupplierPerformance();
+    const { lineChartHtml, pieChartHtml } = renderCharts(performanceData);
     const stats = Analytics.getStats();
     const eventTypeLabels = {
       'page_view': '👁️ Vista de página',
@@ -670,6 +675,11 @@ function initAdmin() {
           <button class="btn btn-secondary btn-sm" onclick="exportAnalytics()">📥 Exportar Datos</button>
           <button class="btn btn-danger btn-sm" onclick="clearAnalytics()">🗑️ Limpiar Todo</button>
         </div>
+      </div>
+
+      <!-- Visual Trend -->
+      <div style="margin-bottom:30px;">
+        ${lineChartHtml}
       </div>
 
       <!-- KPI Cards -->

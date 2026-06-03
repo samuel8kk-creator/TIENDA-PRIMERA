@@ -16,7 +16,9 @@ const App = {
         INITIALIZED: 'ld_initialized',
         ORDERS: 'ld_orders',
         SUPPLIERS: 'ld_suppliers',
-        SUPPLIER_PRODUCTS: 'ld_supplier_products'
+        SUPPLIER_PRODUCTS: 'ld_supplier_products',
+        THEME: 'ld_theme',
+        SYNC_TIMESTAMP: 'ld_sync_timestamp'
     },
 
     // ── SUPABASE ──
@@ -107,6 +109,19 @@ const App = {
 
     async syncWithSupabase() {
         if (!this.supabase) return;
+
+        // ── Cache TTL Implementation (5 mins) ──
+        const isAdmin = await this.isAdminLogged();
+        const lastSync = parseInt(localStorage.getItem(this.KEYS.SYNC_TIMESTAMP) || '0');
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+
+        // Only use cache if not admin and sync happened recently
+        if (!isAdmin && (now - lastSync) < fiveMinutes) {
+            console.log('[App] Usando datos de caché (TTL 5m)');
+            return;
+        }
+
         this.isSyncing = true;
         try {
             const collections = ['products', 'categories', 'banners', 'orders', 'customers'];
@@ -129,6 +144,7 @@ const App = {
             });
             await Promise.all(syncPromises);
             console.log('[App] Sincronización completa');
+            localStorage.setItem(this.KEYS.SYNC_TIMESTAMP, Date.now().toString());
         } catch (e) {
             console.error('[App] Error de sincronización:', e);
         } finally {
@@ -466,6 +482,17 @@ const App = {
     saveCart(cart) {
         localStorage.setItem(this.KEYS.CART, JSON.stringify(cart));
         this.updateCartBadge();
+
+        // ── Push to Cloud if logged in ──
+        const user = this.getCurrentUser();
+        if (user && this.supabase) {
+            this.supabase.from('customers')
+                .update({ cart: cart })
+                .eq('id', user.id)
+                .then(({ error }) => {
+                    if (error) console.error('[App] Error syncing cart to cloud:', error);
+                });
+        }
     },
 
     saveCustomers(customers) {
@@ -728,12 +755,38 @@ const App = {
         return { success: true, user: data };
     },
 
+    async mergeCloudCart(userId) {
+        if (!this.supabase || !userId) return;
+        const { data, error } = await this.supabase.from('customers').select('cart').eq('id', userId).single();
+        if (!error && data && data.cart) {
+            const cloudCart = data.cart;
+            const localCart = this.getCart();
+
+            // Simple merge: Combine unique productIds, preference for cloud qty if same
+            const merged = [...cloudCart];
+            localCart.forEach(localItem => {
+                const exists = merged.find(cloudItem =>
+                    cloudItem.productId === localItem.productId &&
+                    cloudItem.size === localItem.size &&
+                    cloudItem.color === localItem.color
+                );
+                if (!exists) merged.push(localItem);
+            });
+
+            localStorage.setItem(this.KEYS.CART, JSON.stringify(merged));
+            this.updateCartBadge();
+            // Re-sync the final merged cart back to cloud just in case
+            await this.supabase.from('customers').update({ cart: merged }).eq('id', userId);
+        }
+    },
+
     async loginCustomer(email, password) {
         const customers = this.getCustomers();
         const hashedPassword = await this.hashPassword(password, email);
         const user = customers.find(c => c.email === email && (c.password === hashedPassword));
         if (user) {
             this.setCurrentUser(user);
+            await this.mergeCloudCart(user.id);
             return { success: true, user };
         }
         return { success: false, message: 'Correo o contraseña incorrectos.' };
@@ -793,7 +846,7 @@ const App = {
         }
     },
 
-    isAdminLogged() {
+    async isAdminLogged() {
         if (!this.supabase) return false;
         
         // Debug Bypass for Local Development
@@ -1236,20 +1289,17 @@ const App = {
         const suppliers = this.getSuppliers();
         const links = this.getSupplierProducts();
         const products = this.getProducts();
-        const completedOrders = this.getOrders().filter(
+        const orders = this.getOrders();
+        const completedOrders = orders.filter(
             o => o.status === 'entregado' || o.status === 'completado'
         );
 
-        return suppliers.map(supplier => {
+        // ── Calculate Supplier-Specific Data ──
+        const performance = suppliers.map(supplier => {
             const supplierLinks = links.filter(lp => lp.supplier_id === supplier.id);
             const supplierProductIds = new Set(supplierLinks.map(lp => lp.product_id));
-
-            let totalOrders = 0;
-            let totalUnits = 0;
-            let grossRevenue = 0;
-            let totalCost = 0;
+            let totalOrders = 0, totalUnits = 0, grossRevenue = 0, totalCost = 0;
             const productSales = {};
-
             completedOrders.forEach(order => {
                 let orderHasProduct = false;
                 (order.items || []).forEach(item => {
@@ -1259,46 +1309,44 @@ const App = {
                     if (!link || !product) return;
                     orderHasProduct = true;
                     const qty = item.qty || 1;
-                    const unitPrice = item.subtotal ? item.subtotal / qty : product.price;
-                    const revenue = unitPrice * qty;
+                    const revenue = (item.subtotal || (product.price * qty));
                     const cost = link.cost_price * qty;
-                    grossRevenue += revenue;
-                    totalCost += cost;
-                    totalUnits += qty;
+                    grossRevenue += revenue; totalCost += cost; totalUnits += qty;
                     if (!productSales[item.productId]) {
-                        productSales[item.productId] = {
-                            productId: item.productId,
-                            name: product.name,
-                            image: product.image,
-                            qty: 0, revenue: 0, cost: 0,
-                            costPrice: link.cost_price,
-                            salePrice: product.price
-                        };
+                        productSales[item.productId] = { productId: item.productId, name: product.name, image: product.image, qty: 0, revenue: 0, cost: 0 };
                     }
                     productSales[item.productId].qty += qty;
                     productSales[item.productId].revenue += revenue;
-                    productSales[item.productId].cost += cost;
                 });
                 if (orderHasProduct) totalOrders++;
             });
-
             const netProfit = grossRevenue - totalCost;
-            const marginPct = grossRevenue > 0 ? ((netProfit / grossRevenue) * 100).toFixed(1) : '0.0';
-
-            return {
-                ...supplier,
-                totalOrders,
-                totalUnits,
-                grossRevenue,
-                totalCost,
-                netProfit,
-                marginPct,
-                linkedProducts: supplierLinks.length,
-                productSales: Object.values(productSales).sort((a, b) => b.revenue - a.revenue)
-            };
+            return { ...supplier, totalOrders, totalUnits, grossRevenue, totalCost, netProfit,
+                     marginPct: grossRevenue > 0 ? ((netProfit / grossRevenue) * 100).toFixed(1) : '0.0',
+                     linkedProducts: supplierLinks.length,
+                     productSales: Object.values(productSales).sort((a, b) => b.revenue - a.revenue) };
         });
+
+        // ── Calculate Global Sales Trend (Last 30 Days) ──
+        const trend = {};
+        const now = new Date();
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date(); d.setDate(now.getDate() - i);
+            trend[d.toISOString().split('T')[0]] = 0;
+        }
+        completedOrders.forEach(o => {
+            const date = (o.date || o.created_at || '').split('T')[0];
+            if (trend[date] !== undefined) trend[date] += o.total || o.subtotal || 0;
+        });
+
+        return {
+            suppliers: performance,
+            salesTrend: Object.entries(trend).map(([date, value]) => ({ date, value })),
+            topProducts: performance.flatMap(s => s.productSales)
+                .sort((a, b) => b.revenue - a.revenue).slice(0, 5)
+        };
     }
 };
 
 // Init on DOM ready
-document.addEventListener('DOMContentLoaded', () => App.init());
+document.addEventListener("DOMContentLoaded", () => App.init());

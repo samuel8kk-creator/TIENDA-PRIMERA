@@ -3806,4 +3806,154 @@ textarea:focus {
 .quick-add-btn:hover {
   transform: scale(1.1);
   background: var(--primary-hover);
-}
+}/* 🌙 SLEEK DARK MODE (Premium Deep Indigo & Slate) */
+body.dark-theme {
+  --fondo: #0f0c21;
+  --fondo-alt: #1a1635;
+  --fondo-soft: #241f48;
+  --borde: #2e285a;
+  --texto: #f1f0fb;
+  --texto-light: #cbc7e6;
+  --texto-muted: #948fb5;
+  --blanco: #1a1635;
+  --card-bg: #1a1635;
+  --sombra: rgba(0,0,0,0.3);
+  --shimmer: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+}
+
+body.dark-theme .temu-card { background: var(--fondo-alt); border-color: var(--borde); }
+body.dark-theme .line-clamp-2 { color: var(--texto); }
+body.dark-theme .header { background: rgba(15, 12, 33, 0.85); border-bottom-color: var(--borde); }
+body.dark-theme .cart-summary { background: var(--fondo-alt); border-color: var(--borde); }
+body.dark-theme .product-trust-bar { background: linear-gradient(135deg, #1a1635 0%, #0f0c21 100%); border-color: var(--borde); }
+body.dark-theme .ptb-marquee-wrap::before { background: linear-gradient(to right, #1a1635, transparent); }
+body.dark-theme .ptb-marquee-wrap::after { background: linear-gradient(to left, #0f0c21, transparent); }
+
+/* ❄️ ANIMATED SHIMMER EFFECT */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: var(--fondo-soft);
+  background-image: var(--shimmer);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 8px;
+  display: block;
+}
+
+/* 🛍️ CHECKOUT STEPPER MODAL */
+.stepper-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.stepper-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.stepper-content {
+  background: var(--blanco);
+  width: 92%;
+  max-width: 450px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.stepper-modal.active .stepper-content {
+  transform: translateY(0);
+}
+
+.stepper-header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--borde);
+}
+
+.stepper-progress {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.step-dot {
+  width: 30px;
+  height: 6px;
+  background: var(--fondo-soft);
+  border-radius: 3px;
+  transition: background 0.3s;
+}
+
+.step-dot.active {
+  background: var(--primary);
+}
+
+.stepper-body {
+  padding: 24px;
+}
+
+.step-pane {
+  display: none;
+  animation: stFadeIn 0.3s ease;
+}
+
+.step-pane.active {
+  display: block;
+}
+
+@keyframes stFadeIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.shipping-visual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.shipping-card {
+  border: 2px solid var(--borde);
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.shipping-card.selected {
+  border-color: var(--primary);
+  background: rgba(92, 53, 217, 0.05);
+}
+
+.moto-anim { animation: moto-shake 0.5s infinite alternate ease-in-out; display: inline-block; }
+.truck-anim { animation: truck-bounce 0.8s infinite alternate ease-in-out; display: inline-block; }
+
+@keyframes moto-shake {
+  from { transform: rotate(-5deg); }
+  to { transform: rotate(5deg); }
+}
+
+@keyframes truck-bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}

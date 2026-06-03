@@ -159,66 +159,173 @@ function initCart() {
     renderCart();
   };
 
+  // ── Checkout Stepper Logic ──
   window.finalizarPedido = function () {
     const cart = App.getCart();
-    if (cart.length === 0) {
-      App.showToast('Tu carrito está vacío', 'error');
-      return;
-    }
+    if (cart.length === 0) return App.showToast('Tu carrito está vacío', 'error');
 
-    // Final security check: Ensure all items that need sizes have them
+    // Validate sizes
     const products = App.getProducts();
     const missingSize = cart.find(item => {
       const p = products.find(prod => prod.id === item.productId);
       return p && p.sizes && p.sizes.length > 0 && !item.size;
     });
-
     if (missingSize) {
-      const p = products.find(prod => prod.id === missingSize.productId);
-      App.showToast(`Por favor selecciona la talla para: ${p.name}`, 'error');
-      setTimeout(() => {
-        window.location.href = `product.html?id=${p.id}`;
-      }, 1500);
+      App.showToast('Selecciona la talla antes de continuar', 'error');
       return;
     }
 
-    // Build order data for admin panel record
-    const orderItems = cart.map(item => {
-      const p = products.find(pr => pr.id === item.productId);
-      const itemTotal = (p ? p.price : 0) * item.qty;
-      return {
-        productId: item.productId,
-        name: p ? p.name : item.productId,
-        image: p ? (p.images ? p.images[0] : p.image) : '',
-        price: p ? p.price : 0,
-        qty: item.qty,
-        size: item.size || null,
-        color: item.color || null,
-        subtotal: itemTotal
-      };
-    });
-
-    const shipping = shippingType === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
-    const subtotal = orderItems.reduce((s, i) => s + i.subtotal, 0);
-    const total = subtotal + shipping;
-    const user = App.getCurrentUser();
-
-    // Save order to localStorage
-    App.saveOrder({
-      items: orderItems,
-      subtotal,
-      shipping,
-      shippingType,
-      total,
-      customer: user ? { name: user.name, email: user.email, phone: user.phone || null } : null
-    });
-
-    // Track checkout
-    const cartItems = orderItems.map(i => ({ name: i.name, qty: i.qty, price: i.price, size: i.size }));
-    Analytics.trackCheckout(cartItems, total, shippingType);
-    App.sendToWhatsApp(shippingType);
+    showStepper();
   };
 
+  function showStepper() {
+    const user = App.getCurrentUser() || {};
+    const subtotal = App.getCartTotal();
+
+    const modal = document.createElement('div');
+    modal.className = 'stepper-modal active';
+    modal.id = 'checkout-stepper';
+    modal.innerHTML = `
+      <div class="stepper-content">
+        <div class="stepper-header">
+          <h3>Confirmar Pedido</h3>
+          <div class="stepper-progress">
+            <div class="step-dot active" id="dot-1"></div>
+            <div class="step-dot" id="dot-2"></div>
+          </div>
+        </div>
+        <div class="stepper-body">
+          <!-- Step 1: Info -->
+          <div class="step-pane active" id="pane-1">
+            <p style="font-size:0.85rem; color:var(--texto-muted); margin-bottom:15px;">Verifica tus datos de contacto para la entrega.</p>
+            <div class="form-group">
+              <label>Nombre Completo</label>
+              <input type="text" id="st-name" value="${App.esc(user.name || '')}" placeholder="Tu nombre...">
+            </div>
+            <div class="form-group">
+              <label>WhatsApp / Teléfono</label>
+              <input type="tel" id="st-phone" value="${App.esc(user.phone || '')}" placeholder="8x9-xxx-xxxx">
+            </div>
+            <div class="form-group">
+              <label>Provincia / Sector</label>
+              <input type="text" id="st-address" value="${App.esc(user.address || '')}" placeholder="Ej: Santo Domingo, Piantini...">
+            </div>
+            <button class="btn btn-primary btn-block mt-2" onclick="nextStep()">Siguiente: Envío →</button>
+          </div>
+
+          <!-- Step 2: Shipping -->
+          <div class="step-pane" id="pane-2">
+            <p style="font-size:0.85rem; color:var(--texto-muted); margin-bottom:15px;">¿Dónde entregamos tu pedido?</p>
+            <div class="shipping-visual-grid">
+              <div class="shipping-card ${shippingType==='santo-domingo'?'selected':''}" id="sc-sd" onclick="selectStShipping('santo-domingo')">
+                <span class="icon moto-anim">🛵</span>
+                <strong>Santo Domingo</strong>
+                <div style="font-size:0.8rem; color:var(--primary); font-weight:700;">${App.formatPrice(App.SHIPPING.SANTO_DOMINGO)}</div>
+              </div>
+              <div class="shipping-card ${shippingType==='exterior'?'selected':''}" id="sc-ex" onclick="selectStShipping('exterior')">
+                <span class="icon truck-anim">🚚</span>
+                <strong>Exterior / Prov.</strong>
+                <div style="font-size:0.8rem; color:var(--primary); font-weight:700;">${App.formatPrice(App.SHIPPING.EXTERIOR)}</div>
+              </div>
+            </div>
+
+            <div style="margin-top:20px; padding:15px; background:var(--fondo-soft); border-radius:10px;">
+              <div class="d-flex justify-between" style="font-size:0.9rem;"><span>Subtotal:</span> <span>${App.formatPrice(subtotal)}</span></div>
+              <div class="d-flex justify-between" style="font-size:0.9rem;"><span>Envío:</span> <span id="st-ship-cost">${App.formatPrice(App.SHIPPING.SANTO_DOMINGO)}</span></div>
+              <div class="d-flex justify-between" style="font-weight:800; font-size:1.1rem; margin-top:5px; border-top:1px dashed var(--borde); padding-top:5px;">
+                <span>Total:</span> <span id="st-total-cost">${App.formatPrice(subtotal + App.SHIPPING.SANTO_DOMINGO)}</span>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px; margin-top:15px;">
+              <button class="btn btn-secondary" onclick="prevStep()">← Atrás</button>
+              <button class="btn btn-whatsapp" onclick="confirmFinalOrder()">Finalizar por WhatsApp 📱</button>
+            </div>
+          </div>
+        </div>
+        <button style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--texto-muted);" onclick="closeStepper()">✕</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    window._stShipping = shippingType;
+  }
+
+  window.nextStep = function() {
+    const name = document.getElementById('st-name').value.trim();
+    const phone = document.getElementById('st-phone').value.trim();
+    if (!name || !phone) return App.showToast('Nombre y teléfono son obligatorios', 'error');
+
+    document.getElementById('pane-1').classList.remove('active');
+    document.getElementById('pane-2').classList.add('active');
+    document.getElementById('dot-2').classList.add('active');
+  };
+
+  window.prevStep = function() {
+    document.getElementById('pane-2').classList.remove('active');
+    document.getElementById('pane-1').classList.add('active');
+    document.getElementById('dot-2').classList.remove('active');
+  };
+
+  window.selectStShipping = function(type) {
+    window._stShipping = type;
+    document.getElementById('sc-sd').classList.toggle('selected', type === 'santo-domingo');
+    document.getElementById('sc-ex').classList.toggle('selected', type === 'exterior');
+
+    const subtotal = App.getCartTotal();
+    const ship = type === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
+    document.getElementById('st-ship-cost').textContent = App.formatPrice(ship);
+    document.getElementById('st-total-cost').textContent = App.formatPrice(subtotal + ship);
+  };
+
+  window.confirmFinalOrder = function() {
+    const name = document.getElementById('st-name').value.trim();
+    const phone = document.getElementById('st-phone').value.trim();
+    const address = document.getElementById('st-address').value.trim();
+    const type = window._stShipping;
+
+    // Build message with info
+    const cart = App.getCart();
+    const products = App.getProducts();
+    const shipCost = type === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
+    const subtotal = App.getCartTotal();
+
+    let message = '🛍️ *NUEVO PEDIDO - D&E Shop*\n\n';
+    message += `👤 *Cliente:* ${name}\n`;
+    message += `📱 *Teléfono:* ${phone}\n`;
+    message += `📍 *Ubicación:* ${address || 'No especificada'}\n\n`;
+    message += `📦 *Detalle del Carrito:*\n`;
+
+    cart.forEach((item, i) => {
+      const p = products.find(prod => prod.id === item.productId);
+      if(p) {
+        message += `${i+1}. ${p.name} (x${item.qty}) ${item.size?'Talla:'+item.size:''} ${item.color?'Col:'+item.color:''}\n`;
+      }
+    });
+
+    message += `\n🚚 *Envío:* ${type === 'santo-domingo' ? 'Santo Domingo' : 'Exterior'} (${App.formatPrice(shipCost)})\n`;
+    message += `💰 *TOTAL:* ${App.formatPrice(subtotal + shipCost)}`;
+
+    // Track
+    Analytics.trackCheckout(cart.map(i => ({name:i.productId, qty:i.qty})), subtotal+shipCost, type);
+
+    // Save local record
+    App.saveOrder({
+      items: cart, subtotal, shipping: shipCost, shippingType: type, total: subtotal+shipCost,
+      customer: { name, phone, address }
+    });
+
+    const url = `https://wa.me/${App.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+    closeStepper();
+  };
+
+  window.closeStepper = function() {
+    const modal = document.getElementById('checkout-stepper');
+    if(modal) {
+      modal.classList.remove('active');
+      setTimeout(() => modal.remove(), 300);
+    }
+  };
   renderCart();
 }
 
