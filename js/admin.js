@@ -3,15 +3,14 @@
    Login, Product CRUD, Category Toggles, Clients
    ================================================ */
 
-async function initAdmin() {
+function initAdmin() {
   if (window._adminInited) return;
   window._adminInited = true;
   const root = document.getElementById('admin-root');
   const logoutBtn = document.getElementById('btn-admin-logout');
 
   // Check if admin is logged in
-  const isLogged = await App.isAdminLogged();
-  if (!isLogged) {
+  if (!App.isAdminLogged()) {
     renderLoginScreen();
     return;
   }

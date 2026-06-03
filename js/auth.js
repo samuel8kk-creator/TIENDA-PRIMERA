@@ -113,36 +113,6 @@ function initAuth() {
       render();
     };
 
-    async function handlePostAuthRedirect() {
-        // 1. Check for pending cart item
-        const pendingItem = sessionStorage.getItem('ld_pending_cart_item');
-        if (pendingItem) {
-            try {
-                const item = JSON.parse(pendingItem);
-                // Only process if recent (e.g., < 30 mins)
-                if (Date.now() - item.timestamp < 1800000) {
-                    App.addToCart(item.productId, item.quantity, item.size, item.color);
-                    sessionStorage.removeItem('ld_pending_cart_item');
-                    App.showToast('Producto añadido al carrito ✨', 'success');
-                    setTimeout(() => window.location.href = 'cart.html', 1000);
-                    return;
-                }
-            } catch (e) { console.error('Error processing pending cart item:', e); }
-            sessionStorage.removeItem('ld_pending_cart_item');
-        }
-
-        // 2. Check for redirect intent
-        const redirectPath = sessionStorage.getItem('ld_redirect_after_login');
-        if (redirectPath) {
-            sessionStorage.removeItem('ld_redirect_after_login');
-            window.location.href = redirectPath;
-            return;
-        }
-
-        // Default: Refresh current page
-        location.reload();
-    }
-
     window.handleLogin = async function (e) {
       e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
@@ -152,7 +122,7 @@ function initAuth() {
       if (result.success) {
         Analytics.trackLogin(email);
         App.showToast('¡Bienvenido de vuelta! 🎉', 'success');
-        handlePostAuthRedirect();
+        setTimeout(() => location.reload(), 500);
       } else {
         App.showToast(result.message, 'error');
       }
@@ -172,7 +142,7 @@ function initAuth() {
       if (result.success) {
         Analytics.trackRegistration(data.email, data.name);
         App.showToast('¡Cuenta creada exitosamente! 🎉', 'success');
-        handlePostAuthRedirect();
+        setTimeout(() => location.reload(), 500);
       } else {
         App.showToast(result.message, 'error');
       }
