@@ -16,13 +16,18 @@ const App = {
         INITIALIZED: 'ld_initialized',
         ORDERS: 'ld_orders',
         SUPPLIERS: 'ld_suppliers',
-        SUPPLIER_PRODUCTS: 'ld_supplier_products'
+        SUPPLIER_PRODUCTS: 'ld_supplier_products',
+        SYNC_TIMESTAMP: 'ld_sync_ts',
+        DARK_MODE: 'ld_dark_mode'
     },
 
     // ── SUPABASE ──
     supabase: null,
     isSyncing: false,
     isReady: false,
+
+    // ── Sync Cache TTL (5 minutes for guests) ──
+    SYNC_CACHE_TTL: 5 * 60 * 1000,
 
     initSupabase() {
         if (!window.supabase || !window.SUPABASE_CONFIG) {
@@ -105,18 +110,47 @@ const App = {
         }
     },
 
+    _syncPromise: null,
+
     async syncWithSupabase() {
         if (!this.supabase) return;
+
+        // ── Cache TTL: Skip sync for guests if data is fresh (< 5 min old) ──
+        const isAdmin = this.isAdminLogged();
+        if (!isAdmin) {
+            const lastSync = localStorage.getItem(this.KEYS.SYNC_TIMESTAMP);
+            if (lastSync && (Date.now() - parseInt(lastSync)) < this.SYNC_CACHE_TTL) {
+                console.log('[App] 💾 Usando catálogo desde caché local (< 5 min)');
+                return;
+            }
+        }
+
+        // ── Debounce: Prevent simultaneous syncs ──
+        if (this._syncPromise) {
+            console.log('[App] ⏳ Sync en curso, esperando...');
+            return this._syncPromise;
+        }
+
         this.isSyncing = true;
-        try {
-            const collections = ['products', 'categories', 'banners', 'orders', 'customers'];
+        this._syncPromise = (async () => {
+            try {
+            const collections = isAdmin 
+                ? ['products', 'categories', 'banners', 'orders', 'customers', 'suppliers', 'supplier_products']
+                : ['products', 'categories', 'banners'];
+
             const syncPromises = collections.map(async (col) => {
                 const { data, error } = await this.supabase.from(col).select('*');
                 if (!error && data && data.length > 0) {
                     const storageKey = this.KEYS[col.toUpperCase()];
-                    // Banners special handling (usually one row 'main')
                     if (col === 'banners') {
                         localStorage.setItem(storageKey, JSON.stringify(data[0].data));
+                    } else if (col === 'orders') {
+                        // Map snake_case from DB back to camelCase in JS
+                        const mappedOrders = data.map(item => {
+                            const { shipping_type, ...rest } = item;
+                            return { ...rest, shippingType: shipping_type };
+                        });
+                        localStorage.setItem(storageKey, JSON.stringify(mappedOrders));
                     } else {
                         localStorage.setItem(storageKey, JSON.stringify(data));
                     }
@@ -128,26 +162,47 @@ const App = {
                 }
             });
             await Promise.all(syncPromises);
-            console.log('[App] Sincronización completa');
+            // ── Update sync timestamp after successful sync ──
+            localStorage.setItem(this.KEYS.SYNC_TIMESTAMP, Date.now().toString());
+            console.log('[App] ✅ Sincronización completa');
         } catch (e) {
             console.error('[App] Error de sincronización:', e);
         } finally {
             this.isSyncing = false;
+            this._syncPromise = null;
         }
+        })();
+        return this._syncPromise;
     },
 
     async uploadInitialData(col) {
         if (!this.supabase) return;
         const key = this.KEYS[col.toUpperCase()];
-        const localData = JSON.parse(localStorage.getItem(key) || 'null');
-        if (!localData) return;
+        let localData = null;
+        try {
+            localData = JSON.parse(localStorage.getItem(key) || 'null');
+        } catch (e) {
+            console.warn(`[App] Corrupted data for key ${key} during upload, ignoring.`, e);
+        }
+        if (!localData || (Array.isArray(localData) && localData.length === 0)) return;
 
         console.log(`[App] Subiendo datos iniciales a la nube: ${col}`);
-        if (col === 'banners') {
-            await this.supabase.from(col).upsert({ id: 'main', data: localData });
-        } else {
-            // Bulk upsert
-            await this.supabase.from(col).upsert(localData);
+        try {
+            if (col === 'banners') {
+                await this.supabase.from(col).upsert({ id: 'main', data: localData });
+            } else {
+                let payload = localData;
+                if (col === 'orders' && Array.isArray(localData)) {
+                    payload = localData.map(item => {
+                        const { shippingType, ...rest } = item;
+                        return { ...rest, shipping_type: shippingType };
+                    });
+                }
+                // Bulk upsert
+                await this.supabase.from(col).upsert(payload);
+            }
+        } catch (e) {
+            console.error(`[App] Error uploading initial data for ${col}:`, e);
         }
     },
 
@@ -156,10 +211,24 @@ const App = {
         try {
             if (col === 'banners') {
                 await this.supabase.from(col).upsert({ id: 'main', data: data });
-            } else if (data && data.id) {
-                await this.supabase.from(col).upsert(data);
-            } else if (Array.isArray(data)) {
-                await this.supabase.from(col).upsert(data);
+            } else {
+                let payload = data;
+                if (col === 'orders') {
+                    if (Array.isArray(data)) {
+                        payload = data.map(item => {
+                            const { shippingType, ...rest } = item;
+                            return { ...rest, shipping_type: shippingType };
+                        });
+                    } else if (data) {
+                        const { shippingType, ...rest } = data;
+                        payload = { ...rest, shipping_type: shippingType };
+                    }
+                }
+                if (payload && payload.id) {
+                    await this.supabase.from(col).upsert(payload);
+                } else if (Array.isArray(payload)) {
+                    await this.supabase.from(col).upsert(payload);
+                }
             }
         } catch (e) { console.error('[App] Error al guardar en nube:', e); }
     },
@@ -215,21 +284,112 @@ const App = {
     WHATSAPP_NUMBER: '18496398500',
     NOTIFICATION_EMAIL: 'dye.servicioss@gmail.com',
 
+    // ── Safe JSON Parser ──
+    _parseJSON(key, fallback = []) {
+        try {
+            const data = localStorage.getItem(key);
+            if (!data) return fallback;
+            return JSON.parse(data);
+        } catch (e) {
+            console.warn(`[App] Corrupted data for key ${key}, resetting to fallback.`, e);
+            localStorage.setItem(key, JSON.stringify(fallback));
+            return fallback;
+        }
+    },
+
     // ── Init ──
     async init() {
         this.initSupabase();
         if (!localStorage.getItem(this.KEYS.INITIALIZED)) {
             this.seedData();
         }
+        
+        // Auto-heal checks for core data to prevent corrupt JSON crashes
+        this.getProducts();
+        this.getCategories();
+        this.getBanners();
+
         // Intentar sincronizar antes de renderizar si es posible
         await this.syncWithSupabase();
         
         this.updateCartBadge();
         this.initGlobalEvents();
+        this.initDarkMode();
+        this.initConnectionBadge();
         this.isReady = true;
 
         // Emitir evento para avisar a otras partes de que la app está lista
         window.dispatchEvent(new CustomEvent('app-ready'));
+    },
+
+    // ── Dark Mode ──
+    initDarkMode() {
+        // Apply saved preference
+        const saved = localStorage.getItem(this.KEYS.DARK_MODE);
+        if (saved === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+
+        // Create the toggle button
+        const btn = document.createElement('button');
+        btn.className = 'theme-toggle-btn';
+        btn.id = 'theme-toggle-btn';
+        btn.setAttribute('aria-label', 'Alternar modo oscuro');
+        btn.setAttribute('title', document.body.classList.contains('dark-theme') ? 'Cambiar a Modo Claro ☀️' : 'Cambiar a Modo Oscuro 🌙');
+        btn.innerHTML = `<span class="toggle-icon">${document.body.classList.contains('dark-theme') ? '☀️' : '🌙'}</span>`;
+
+        btn.addEventListener('click', () => {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem(this.KEYS.DARK_MODE, isDark ? 'dark' : 'light');
+            // Animate the icon swap
+            const icon = btn.querySelector('.toggle-icon');
+            icon.style.transform = 'scale(0) rotate(180deg)';
+            setTimeout(() => {
+                icon.textContent = isDark ? '☀️' : '🌙';
+                btn.setAttribute('title', isDark ? 'Cambiar a Modo Claro ☀️' : 'Cambiar a Modo Oscuro 🌙');
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            }, 200);
+        });
+
+        document.body.appendChild(btn);
+    },
+
+    // ── Online/Offline Connection Badge ──
+    initConnectionBadge() {
+        const badge = document.createElement('div');
+        badge.className = 'connection-badge';
+        badge.id = 'connection-badge';
+        badge.innerHTML = `<div class="connection-badge-dot"></div><span id="connection-badge-msg">Conectado</span>`;
+        document.body.appendChild(badge);
+
+        let hideTimer = null;
+
+        const showBadge = (msg, isOffline = false) => {
+            const msgEl = badge.querySelector('#connection-badge-msg');
+            msgEl.textContent = msg;
+            badge.classList.toggle('offline', isOffline);
+            badge.classList.add('show');
+            clearTimeout(hideTimer);
+            if (!isOffline) {
+                // Auto-hide online message after 3 seconds
+                hideTimer = setTimeout(() => badge.classList.remove('show'), 3000);
+            }
+        };
+
+        window.addEventListener('offline', () => {
+            showBadge('📴 Sin conexión — Modo offline activo', true);
+        });
+
+        window.addEventListener('online', () => {
+            showBadge('✅ Conexión restaurada');
+            // Invalidate cache to force re-sync when back online
+            localStorage.removeItem(this.KEYS.SYNC_TIMESTAMP);
+        });
+
+        // If already offline when page loads
+        if (!navigator.onLine) {
+            showBadge('📴 Sin conexión — Modo offline activo', true);
+        }
     },
 
     initGlobalEvents() {
@@ -262,10 +422,15 @@ const App = {
             }
         });
 
-        // ── Global Live Search Logic ──
+        // ── Global Live Search Logic — con debounce 300ms (OPT-005) ──
+        let _searchDebounceTimer = null;
         document.addEventListener('input', (e) => {
             if (e.target.id === 'search-input-header') {
-                this.handleLiveSearch(e.target.value.trim());
+                clearTimeout(_searchDebounceTimer);
+                const term = e.target.value.trim();
+                _searchDebounceTimer = setTimeout(() => {
+                    this.handleLiveSearch(term);
+                }, 300);
             }
         });
     },
@@ -390,12 +555,64 @@ const App = {
     },
 
     async hashPassword(password, email = '') {
-        // Use salted hashing: password + email (unique) + internal salt
-        const combined = password + (email.toLowerCase()) + this._S;
-        const msgUint8 = new TextEncoder().encode(combined);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        // SECURITY FIX: Usar PBKDF2 (100,000 iteraciones) en lugar de SHA-256 plano.
+        // SHA-256 es una función hash rápida — NO adecuada para contraseñas.
+        // PBKDF2 hace el ataque de fuerza bruta ~100,000x más costoso.
+        try {
+            const encoder = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(password),
+                { name: 'PBKDF2' },
+                false,
+                ['deriveBits']
+            );
+            // Salt único por usuario = email normalizado + salt interno
+            const saltStr = email.toLowerCase() + this._S;
+            const salt = encoder.encode(saltStr);
+            const bits = await crypto.subtle.deriveBits(
+                { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 100_000 },
+                keyMaterial,
+                256
+            );
+            return Array.from(new Uint8Array(bits))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+        } catch (e) {
+            // Fallback si el browser no soporta crypto.subtle (muy poco probable)
+            console.error('[Security] PBKDF2 falló, usando fallback SHA-256:', e);
+            const combined = password + email.toLowerCase() + this._S;
+            const msgUint8 = new TextEncoder().encode(combined);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            return Array.from(new Uint8Array(hashBuffer))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+    },
+
+    // ── URL Validation (Security) ──
+    validateImageUrl(url) {
+        // SECURITY FIX: Prevenir javascript: y data: URLs como fuente de imágenes
+        if (!url || typeof url !== 'string') return false;
+        const trimmed = url.trim();
+        if (!trimmed) return false;
+        // Bloquear protocolos peligrosos
+        const dangerousProtocols = ['javascript:', 'vbscript:', 'data:text', 'data:application'];
+        const lower = trimmed.toLowerCase();
+        if (dangerousProtocols.some(p => lower.startsWith(p))) return false;
+        // Permitir: https://, rutas relativas, data:image/ (para previews base64)
+        if (trimmed.startsWith('https://') ||
+            trimmed.startsWith('/') ||
+            trimmed.startsWith('./') ||
+            trimmed.startsWith('../') ||
+            trimmed.startsWith('data:image/')) {
+            return true;
+        }
+        // Intentar parsear como URL para validar estructura
+        try {
+            const parsed = new URL(trimmed);
+            return parsed.protocol === 'https:';
+        } catch {
+            return false;
+        }
     },
 
     seedData() {
@@ -417,11 +634,11 @@ const App = {
 
     // ── Getters ──
     getProducts() {
-        return JSON.parse(localStorage.getItem(this.KEYS.PRODUCTS) || '[]');
+        return this._parseJSON(this.KEYS.PRODUCTS, typeof SEED_DATA !== 'undefined' && SEED_DATA ? SEED_DATA.products : []);
     },
 
     getBanners() {
-        return JSON.parse(localStorage.getItem(this.KEYS.BANNERS) || JSON.stringify(this.DEFAULT_BANNERS));
+        return this._parseJSON(this.KEYS.BANNERS, this.DEFAULT_BANNERS);
     },
 
     saveBanners(banners) {
@@ -430,7 +647,7 @@ const App = {
     },
 
     getCategories() {
-        return JSON.parse(localStorage.getItem(this.KEYS.CATEGORIES) || '[]');
+        return this._parseJSON(this.KEYS.CATEGORIES, typeof SEED_DATA !== 'undefined' && SEED_DATA ? SEED_DATA.categories : []);
     },
 
     getActiveCategories() {
@@ -438,16 +655,27 @@ const App = {
     },
 
     getCart() {
-        return JSON.parse(localStorage.getItem(this.KEYS.CART) || '[]');
+        return this._parseJSON(this.KEYS.CART, []);
     },
 
     getCustomers() {
-        return JSON.parse(localStorage.getItem(this.KEYS.CUSTOMERS) || '[]');
+        return this._parseJSON(this.KEYS.CUSTOMERS, []);
     },
 
     getCurrentUser() {
         const u = localStorage.getItem(this.KEYS.CURRENT_USER);
-        return u ? JSON.parse(u) : null;
+        if (!u) return null;
+        try {
+            const parsed = JSON.parse(u);
+            // SECURITY FIX: Verificar expiración de sesión (TTL 24h)
+            if (parsed._sessionExpiry && Date.now() > parsed._sessionExpiry) {
+                this.logoutCustomer(); // Auto-logout al expirar
+                return null;
+            }
+            // Retornar sin el campo interno de expiración
+            const { _sessionExpiry, password: _pwd, ...user } = parsed;
+            return user;
+        } catch { return null; }
     },
 
     getProduct(id) {
@@ -466,6 +694,15 @@ const App = {
     saveCart(cart) {
         localStorage.setItem(this.KEYS.CART, JSON.stringify(cart));
         this.updateCartBadge();
+        
+        // ── Cloud Cart Sync ──
+        const user = this.getCurrentUser();
+        if (user && this.supabase) {
+            this.supabase.rpc('update_customer_cart', { p_email: user.email, p_cart: cart })
+                .then(({ error }) => {
+                    if (error) console.error('[App] Error saving cart to cloud:', error.message);
+                });
+        }
     },
 
     saveCustomers(customers) {
@@ -474,7 +711,7 @@ const App = {
 
     // ── Orders (WhatsApp Checkout Records) ──
     getOrders() {
-        return JSON.parse(localStorage.getItem(this.KEYS.ORDERS) || '[]');
+        return this._parseJSON(this.KEYS.ORDERS, []);
     },
 
     saveOrder(orderData) {
@@ -510,7 +747,35 @@ const App = {
 
     setCurrentUser(user) {
         if (user) {
-            localStorage.setItem(this.KEYS.CURRENT_USER, JSON.stringify(user));
+            // SECURITY FIX: Añadir TTL de 24h a la sesión del cliente
+            // y asegurar que nunca se guarde el hash de contraseña
+            const { password: _pwd, ...safeUser } = user;
+            const sessionData = {
+                ...safeUser,
+                _sessionExpiry: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
+            };
+            localStorage.setItem(this.KEYS.CURRENT_USER, JSON.stringify(sessionData));
+            
+            // ── Fetch Cloud Cart and merge ──
+            if (this.supabase) {
+                this.supabase.from('customers').select('cart').eq('email', safeUser.email).single()
+                .then(({ data, error }) => {
+                    if (!error && data && data.cart) {
+                        let cloudCart = [];
+                        try { cloudCart = typeof data.cart === 'string' ? JSON.parse(data.cart) : data.cart; } catch(e){}
+                        if (cloudCart && Array.isArray(cloudCart) && cloudCart.length > 0) {
+                            let localCart = this.getCart();
+                            cloudCart.forEach(cItem => {
+                                const exists = localCart.find(l => l.productId === cItem.productId && l.size == cItem.size && l.color == cItem.color);
+                                if (!exists) localCart.push(cItem);
+                            });
+                            localStorage.setItem(this.KEYS.CART, JSON.stringify(localCart));
+                            this.updateCartBadge();
+                            if (window.renderCart) window.renderCart();
+                        }
+                    }
+                });
+            }
         } else {
             localStorage.removeItem(this.KEYS.CURRENT_USER);
         }
@@ -707,19 +972,43 @@ const App = {
 
     // ── Customer Auth ──
     async registerCustomer(data) {
-        const customers = this.getCustomers();
-        if (customers.find(c => c.email === data.email)) {
-            return { success: false, message: 'Este correo ya está registrado.' };
+        if (data.email) data.email = data.email.trim();
+        if (this.supabase) {
+            const { data: exists, error: checkError } = await this.supabase.rpc('check_email_exists', {
+                p_email: data.email
+            });
+            if (checkError) {
+                console.error('[App] Error checking email:', checkError.message);
+                return { success: false, message: 'Error de conexión con el servidor.' };
+            }
+            if (exists) {
+                return { success: false, message: 'Este correo ya está registrado.' };
+            }
+        } else {
+            const customers = this.getCustomers();
+            if (customers.find(c => c.email === data.email)) {
+                return { success: false, message: 'Este correo ya está registrado.' };
+            }
         }
+
         data.id = 'c' + Date.now();
-        data.registered = new Date().toISOString();
+        data.registered_at = new Date().toISOString();
+        data.registered = data.registered_at;
 
         // Hash password before saving (Security Salted)
         data.password = await this.hashPassword(data.password, data.email);
 
+        if (this.supabase) {
+            const { error: insertError } = await this.supabase.from('customers').insert([data]);
+            if (insertError) {
+                console.error('[App] Error in customers insert:', insertError.message);
+                return { success: false, message: 'Error al registrar usuario en la nube.' };
+            }
+        }
+
+        const customers = this.getCustomers();
         customers.push(data);
         this.saveCustomers(customers);
-        this.saveToCloud('customers', data);
         this.setCurrentUser(data);
 
         // Trigger mailto
@@ -729,12 +1018,42 @@ const App = {
     },
 
     async loginCustomer(email, password) {
-        const customers = this.getCustomers();
         const hashedPassword = await this.hashPassword(password, email);
-        const user = customers.find(c => c.email === email && (c.password === hashedPassword));
-        if (user) {
-            this.setCurrentUser(user);
-            return { success: true, user };
+        if (this.supabase) {
+            const { data, error } = await this.supabase.rpc('check_customer_login', {
+                p_email: email.trim(),
+                p_password_hash: hashedPassword
+            });
+            if (error) {
+                console.error('[App] Error in customer login:', error.message);
+                return { success: false, message: 'Error de conexión con el servidor.' };
+            }
+            if (data && data.length > 0) {
+                const user = data[0];
+                // SECURITY FIX: Nunca guardar el hash de contraseña en localStorage
+                const { password: _pwd, ...safeUser } = user;
+                this.setCurrentUser(safeUser);
+
+                const customers = this.getCustomers();
+                const idx = customers.findIndex(c => c.email === safeUser.email);
+                if (idx !== -1) {
+                    // También limpiar hash en la lista local de clientes
+                    const { password: _p, ...safeExisting } = customers[idx];
+                    customers[idx] = { ...safeExisting, ...safeUser };
+                } else {
+                    customers.push(safeUser);
+                }
+                this.saveCustomers(customers);
+
+                return { success: true, user: safeUser };
+            }
+        } else {
+            const customers = this.getCustomers();
+            const user = customers.find(c => c.email === email && (c.password === hashedPassword));
+            if (user) {
+                this.setCurrentUser(user);
+                return { success: true, user };
+            }
         }
         return { success: false, message: 'Correo o contraseña incorrectos.' };
     },
@@ -796,12 +1115,6 @@ const App = {
     isAdminLogged() {
         if (!this.supabase) return false;
         
-        // Debug Bypass for Local Development
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-        if (isLocal && localStorage.getItem('ld_admin_debug') === 'true') {
-            return true;
-        }
-
         try {
             const projectId = window.SUPABASE_CONFIG.URL.split('//')[1].split('.')[0];
             const sessionStr = localStorage.getItem(`sb-${projectId}-auth-token`);
@@ -991,29 +1304,7 @@ const App = {
         </div>
       </div>
 
-      <script>
-        // Auto-populate category dropdown — XSS-safe via DOM API
-        setTimeout(() => {
-          const select = document.getElementById('header-cat-select');
-          if (!select) return;
-          try {
-            const categories = JSON.parse(localStorage.getItem('ld_categories') || '[]');
-            // Clear existing options safely
-            select.innerHTML = '';
-            const allOpt = document.createElement('option');
-            allOpt.value = 'all';
-            allOpt.textContent = 'Todas las Categorías';
-            select.appendChild(allOpt);
-            categories.filter(c => c.isActive).forEach(c => {
-              const opt = document.createElement('option');
-              opt.value = c.id;  // safe: set as property, not HTML
-              // BUG FIX: safeEmoji and safeName were undefined — fixed below
-              opt.textContent = (c.emoji || '') + ' ' + (c.name || c.id);
-              select.appendChild(opt);
-            });
-          } catch(e) { console.warn('Header categories error:', e); }
-        }, 0);
-      </script>
+      <!-- SECURITY FIX: Script inline eliminado — ahora se llama populateCategorySelect() desde JS -->
 
       <!-- Navigation Bar -->
       <nav class="header-nav">
@@ -1035,6 +1326,28 @@ const App = {
         </div>
       </nav>
     </header>`;
+        setTimeout(() => this.populateCategorySelect(), 0);
+        return html;
+    },
+
+    // ── Populate Category Dropdown (XSS-safe, sin script inline) ──
+    populateCategorySelect() {
+        const select = document.getElementById('header-cat-select');
+        if (!select) return;
+        try {
+            const categories = this.getCategories().filter(c => c.isActive);
+            select.innerHTML = '';
+            const allOpt = document.createElement('option');
+            allOpt.value = 'all';
+            allOpt.textContent = 'Todas las Categorías';
+            select.appendChild(allOpt);
+            categories.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = (c.emoji || '') + ' ' + (c.name || c.id);
+                select.appendChild(opt);
+            });
+        } catch (e) { }
     },
 
     // ── Common Footer HTML ──
@@ -1094,7 +1407,7 @@ const App = {
     // ══════════════════════════════════════════════════════════
 
     getSuppliers() {
-        return JSON.parse(localStorage.getItem(this.KEYS.SUPPLIERS) || '[]');
+        return this._parseJSON(this.KEYS.SUPPLIERS, []);
     },
 
     getSupplier(id) {
@@ -1118,6 +1431,7 @@ const App = {
         };
         suppliers.push(supplier);
         localStorage.setItem(this.KEYS.SUPPLIERS, JSON.stringify(suppliers));
+        this.saveToCloud('suppliers', supplier);
         return supplier;
     },
 
@@ -1140,12 +1454,10 @@ const App = {
         let links = this.getSupplierProducts();
         links = links.filter(lp => lp.supplier_id !== id);
         localStorage.setItem(this.KEYS.SUPPLIER_PRODUCTS, JSON.stringify(links));
-        // We delete from cloud if table exists
-        this.deleteFromCloud('supplier_products', id); 
     },
 
     getSupplierProducts() {
-        return JSON.parse(localStorage.getItem(this.KEYS.SUPPLIER_PRODUCTS) || '[]');
+        return this._parseJSON(this.KEYS.SUPPLIER_PRODUCTS, []);
     },
 
     getProductsForSupplier(supplierId) {
@@ -1160,25 +1472,33 @@ const App = {
     linkProductToSupplier(supplierId, productId, costPrice) {
         const links = this.getSupplierProducts();
         const existingIdx = links.findIndex(lp => lp.product_id === productId);
+        let linkObj;
         if (existingIdx !== -1) {
             links[existingIdx].supplier_id = supplierId;
             links[existingIdx].cost_price = parseFloat(costPrice) || 0;
+            linkObj = links[existingIdx];
         } else {
-            links.push({
+            linkObj = {
                 id: 'LP-' + Date.now(),
                 supplier_id: supplierId,
                 product_id: productId,
                 cost_price: parseFloat(costPrice) || 0,
                 linked_at: new Date().toISOString()
-            });
+            };
+            links.push(linkObj);
         }
         localStorage.setItem(this.KEYS.SUPPLIER_PRODUCTS, JSON.stringify(links));
+        this.saveToCloud('supplier_products', linkObj);
     },
 
     unlinkProductFromSupplier(productId) {
         let links = this.getSupplierProducts();
-        links = links.filter(lp => lp.product_id !== productId);
-        localStorage.setItem(this.KEYS.SUPPLIER_PRODUCTS, JSON.stringify(links));
+        const linkToDelete = links.find(lp => lp.product_id === productId);
+        if (linkToDelete) {
+            links = links.filter(lp => lp.product_id !== productId);
+            localStorage.setItem(this.KEYS.SUPPLIER_PRODUCTS, JSON.stringify(links));
+            this.deleteFromCloud('supplier_products', linkToDelete.id);
+        }
     },
 
     // ── Smart Similar Products (Automático por Familia/Parentesco) ──

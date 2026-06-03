@@ -73,7 +73,7 @@ function initProduct() {
           <div class="pg-track" id="pg-track">
             ${images.map((img, i) => `
               <div class="pg-slide">
-                <img src="${img}" alt="${App.sanitize(product.name)} - foto ${i+1}"
+                <img src="${App.esc(img)}" alt="${App.esc(product.name)} - foto ${i+1}"
                      onerror="this.onerror=null; this.src=App.PLACEHOLDER;">
               </div>
             `).join('')}
@@ -85,13 +85,13 @@ function initProduct() {
         <div class="thumbnail-strip">
           ${images.map((img, i) => `
             <div class="thumb ${i === 0 ? 'active' : ''}" data-index="${i}">
-              <img src="${img}" onerror="this.onerror=null; this.src=App.PLACEHOLDER;">
+              <img src="${App.esc(img)}" onerror="this.onerror=null; this.src=App.PLACEHOLDER;">
             </div>
           `).join('')}
         </div>
       ` : `
         <div class="main-image-wrap">
-          <img src="${images[0]}" alt="${App.sanitize(product.name)}" id="main-product-img"
+          <img src="${App.esc(images[0])}" alt="${App.esc(product.name)}" id="main-product-img"
                onerror="this.onerror=null; this.src=App.PLACEHOLDER;">
         </div>
       `}
@@ -455,8 +455,8 @@ function initProduct() {
             ${photos.length > 0 ? `
               <div class="review-media-grid">
                 ${photos.map(m => `
-                  <div class="review-media-item" onclick="openMediaLightbox('${m.src}','photo')">
-                    <img src="${m.src}" alt="Foto de la reseña" loading="lazy" onerror="this.parentElement.style.display='none'">
+                  <div class="review-media-item" onclick="openMediaLightbox('${App.esc(m.src)}','photo')">
+                    <img src="${App.esc(m.src)}" alt="Foto de la reseña" loading="lazy" onerror="this.parentElement.style.display='none'">
                     <div class="media-play-overlay" style="display:none;"></div>
                   </div>`).join('')}
               </div>` : ''}
@@ -465,15 +465,15 @@ function initProduct() {
               <div class="review-video-wrap">
                 ${(video.isLocal || video.src.startsWith('data:')) ? `
                   <video controls style="width:100%;border-radius:10px;max-height:280px;background:#000;">
-                    <source src="${video.src}">
+                    <source src="${App.esc(video.src)}">
                     Tu navegador no soporta video.
                   </video>` :
                   (video.src.includes('youtube') || video.src.includes('youtu.be')) ? `
-                  <iframe src="${video.src.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/')}"
+                  <iframe src="${App.esc(video.src.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/'))}"
                     frameborder="0" allow="autoplay; encrypted-media" allowfullscreen
                     style="width:100%;aspect-ratio:16/9;border-radius:10px;"></iframe>` : `
                   <video controls style="width:100%;border-radius:10px;max-height:280px;">
-                    <source src="${video.src}">
+                    <source src="${App.esc(video.src)}">
                     Tu navegador no soporta video.
                   </video>`}
               </div>` : ''}
@@ -607,7 +607,7 @@ function initProduct() {
     function renderPhotoPreview() {
       photoPreview.innerHTML = reviewPhotos.map((src, i) => `
         <div style="position:relative;display:inline-block;margin:4px;">
-          <img src="${src}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--rosa);">
+          <img src="${App.esc(src)}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--rosa);">
           <button type="button" onclick="removeReviewPhoto(${i})"
             style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:white;border:none;cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>`).join('');
@@ -660,7 +660,7 @@ function initProduct() {
       if (!reviewVideo) { videoPreview.innerHTML = ''; return; }
       videoPreview.innerHTML = `
         <div style="position:relative;margin-bottom:10px;">
-          <video src="${reviewVideo}" controls
+          <video src="${App.esc(reviewVideo)}" controls
             style="width:100%;max-height:200px;border-radius:10px;object-fit:cover;border:2px solid var(--rosa);"></video>
           <button type="button" onclick="removeReviewVideo()"
             style="position:absolute;top:8px;right:8px;background:#ef4444;color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.3);">✕</button>
@@ -758,9 +758,9 @@ function initProduct() {
           
           <div class="card-img-slider">
             ${imgs.map(url => `
-              <a href="product.html?id=${p.id}" class="card-img-slide" onclick="${clickTrack}">
+              <a href="product.html?id=${App.esc(p.id)}" class="card-img-slide" onclick="${clickTrack}">
                 <img class="img-skeleton"
-                     data-lazy-src="${url}"
+                     data-lazy-src="${App.esc(url)}"
                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
                      alt="${App.sanitize(p.name)}">
               </a>
@@ -769,7 +769,7 @@ function initProduct() {
           </div>
 
           <div class="temu-card-body">
-            <a href="product.html?id=${p.id}" class="product-title line-clamp-2" onclick="${clickTrack}">
+            <a href="product.html?id=${App.esc(p.id)}" class="product-title line-clamp-2" onclick="${clickTrack}">
               ${App.sanitize(p.name)}
             </a>
             

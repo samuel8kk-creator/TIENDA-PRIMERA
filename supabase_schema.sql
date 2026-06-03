@@ -1,5 +1,7 @@
 -- SQL Schema for D&E Shop (Supabase)
 -- Ejecuta este código en el Editor SQL de tu proyecto de Supabase.
+-- NOTA: Si ya habías creado la tabla customers, ejecuta esto para añadir la columna del carrito:
+-- ALTER TABLE customers ADD COLUMN IF NOT EXISTS cart JSONB DEFAULT '[]';
 
 -- 1. Tabla de Productos
 CREATE TABLE IF NOT EXISTS products (
@@ -37,13 +39,12 @@ CREATE TABLE IF NOT EXISTS orders (
     id TEXT PRIMARY KEY,
     date TIMESTAMPTZ DEFAULT NOW(),
     status TEXT DEFAULT 'pendiente',
-    customer_name TEXT,
-    customer_email TEXT,
     items JSONB DEFAULT '[]',
     subtotal NUMERIC,
-    shipping_cost NUMERIC,
-    total NUMERIC,
+    shipping NUMERIC,
     shipping_type TEXT,
+    total NUMERIC,
+    customer JSONB DEFAULT '{}',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS customers (
     password TEXT NOT NULL, -- Hash
     phone TEXT,
     address TEXT,
+    cart JSONB DEFAULT '[]',
     registered_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -88,6 +90,7 @@ CREATE POLICY "Categorías: Solo Admin" ON categories FOR ALL USING (auth.jwt() 
 CREATE POLICY "Pedidos: Clientes pueden insertar" ON orders FOR INSERT WITH CHECK (true);
 CREATE POLICY "Pedidos: Lectura solo por Admin" ON orders FOR SELECT USING (auth.jwt() ->> 'email' = 'l272727d@gmail.com');
 CREATE POLICY "Pedidos: Gestión solo por Admin" ON orders FOR UPDATE USING (auth.jwt() ->> 'email' = 'l272727d@gmail.com');
+CREATE POLICY "Pedidos: Eliminación solo por Admin" ON orders FOR DELETE USING (auth.jwt() ->> 'email' = 'l272727d@gmail.com');
 
 -- 4. Políticas de CLIENTES
 CREATE POLICY "Clientes: Solo Admin puede ver lista" ON customers FOR SELECT USING (auth.jwt() ->> 'email' = 'l272727d@gmail.com');
@@ -106,3 +109,40 @@ CREATE POLICY "Banners: Solo Admin" ON banners FOR ALL USING (auth.jwt() ->> 'em
 ALTER PUBLICATION supabase_realtime ADD TABLE products;
 ALTER PUBLICATION supabase_realtime ADD TABLE categories;
 ALTER PUBLICATION supabase_realtime ADD TABLE banners;
+
+-- 7. FUNCIONES DE AUTENTICACIÓN SEGURA PARA CLIENTES (RPC)
+-- Permiten el login y la verificación de correos sin exponer la tabla completa.
+
+CREATE OR REPLACE FUNCTION check_customer_login(p_email TEXT, p_password_hash TEXT)
+RETURNS TABLE (
+    id TEXT,
+    name TEXT,
+    email TEXT,
+    phone TEXT,
+    address TEXT,
+    registered_at TIMESTAMPTZ
+) SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+    SELECT c.id, c.name, c.email, c.phone, c.address, c.registered_at
+    FROM customers c
+    WHERE LOWER(c.email) = LOWER(p_email) AND c.password = p_password_hash;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION check_email_exists(p_email TEXT)
+RETURNS BOOLEAN SECURITY DEFINER AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM customers WHERE LOWER(email) = LOWER(p_email)
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+-- 8. FUNCIONES PARA EL CARRITO (RPC)
+CREATE OR REPLACE FUNCTION update_customer_cart(p_email TEXT, p_cart JSONB)
+RETURNS VOID SECURITY DEFINER AS $$
+BEGIN
+    UPDATE customers SET cart = p_cart WHERE LOWER(email) = LOWER(p_email);
+END;
+$$ LANGUAGE plpgsql;

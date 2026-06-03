@@ -136,17 +136,7 @@ function initAdmin() {
       const email = document.getElementById('admin-email').value.trim();
       const password = document.getElementById('admin-password').value;
 
-      // Local Debug Bypass
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-      if (isLocal && email === 'admin@local' && password === 'debug') {
-          localStorage.setItem('ld_admin_debug', 'true');
-          App.showToast('Modo Debug Local Activado 🛠️', 'success');
-          setTimeout(() => location.reload(), 500);
-          return;
-      }
-
       if (await App.adminLogin(email, password)) {
-          localStorage.removeItem('ld_admin_debug'); // Clear debug if real login works
         App.showToast('¡Bienvenido, Admin! 🎉', 'success');
         setTimeout(() => location.reload(), 500);
       } else {
@@ -293,12 +283,12 @@ function initAdmin() {
             
             <div style="display: flex; gap: 20px; align-items: flex-end;">
               <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid var(--borde); flex-shrink: 0;">
-                <img src="${cat.image || ''}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src=App.PLACEHOLDER">
+                <img src="${App.esc(cat.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src=App.PLACEHOLDER">
               </div>
               <div style="flex: 1;">
                 <label style="display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--texto-light);">URL de la Imagen (Mujer, Hombre, Niños, etc.)</label>
                 <div style="display: flex; gap: 10px;">
-                  <input type="url" id="cat-img-${cat.id}" value="${cat.image || ''}" placeholder="https://..." style="flex: 1; padding: 8px;">
+                  <input type="url" id="cat-img-${cat.id}" value="${App.esc(cat.image || '')}" placeholder="https://..." style="flex: 1; padding: 8px;">
                   <button class="btn btn-sm btn-primary" onclick="saveCatImg('${cat.id}')">Guardar Foto</button>
                 </div>
               </div>
@@ -330,12 +320,12 @@ function initAdmin() {
 
             <div style="display: flex; gap: 10px; align-items: flex-end;">
               <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid var(--borde); flex-shrink: 0;">
-                <img src="${cat.image || ''}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src=App.PLACEHOLDER">
+                <img src="${App.esc(cat.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src=App.PLACEHOLDER">
               </div>
               <div style="flex: 1;">
                 <label style="display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--texto-light);">URL de la Imagen</label>
                 <div style="display: flex; gap: 10px;">
-                  <input type="url" id="cat-img-${cat.id}" value="${cat.image || ''}" placeholder="https://..." style="flex: 1; padding: 8px;">
+                  <input type="url" id="cat-img-${cat.id}" value="${App.esc(cat.image || '')}" placeholder="https://..." style="flex: 1; padding: 8px;">
                   <button class="btn btn-sm btn-primary" onclick="saveCatImg('${cat.id}')">Guardar Foto</button>
                 </div>
               </div>
@@ -712,7 +702,26 @@ function initAdmin() {
         </div>
       </div>
 
-      <!-- Two column grid for tables -->
+      <!-- ── 📊 Visual Charts (Chart.js) ── -->
+      <div class="admin-charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <div class="chart-card admin-card">
+          <h3 style="margin-bottom: 15px;">🔥 Productos Más Vistos</h3>
+          <canvas id="chartTopProducts" style="width:100%; max-height:250px;"></canvas>
+        </div>
+        <div class="chart-card admin-card">
+          <h3 style="margin-bottom: 15px;">🛒 Más Agregados al Carrito</h3>
+          <canvas id="chartTopCart" style="width:100%; max-height:250px;"></canvas>
+        </div>
+        <div class="chart-card admin-card">
+          <h3 style="margin-bottom: 15px;">🛍️ Pedidos por Estado</h3>
+          <canvas id="chartOrders" style="width:100%; max-height:250px;"></canvas>
+        </div>
+        <div class="chart-card admin-card">
+          <h3 style="margin-bottom: 15px;">🏭 Proveedores con Más Ingresos</h3>
+          <canvas id="chartSuppliers" style="width:100%; max-height:250px;"></canvas>
+        </div>
+      </div>
+
       <div class="analytics-tables-grid">
 
         <!-- Top Products Viewed -->
@@ -863,6 +872,103 @@ function initAdmin() {
         </div>`}
       </div>
     `;
+    
+    // Call renderChartJsAnalytics asynchronously so DOM nodes exist
+    setTimeout(() => renderChartJsAnalytics(stats), 50);
+  }
+
+  function renderChartJsAnalytics(stats) {
+    if (typeof Chart === 'undefined') {
+        console.warn('Chart.js no está cargado');
+        return;
+    }
+
+    // Chart 1: Top Products Viewed
+    const ctxProd = document.getElementById('chartTopProducts');
+    if (ctxProd && stats.topProducts.length > 0) {
+        new Chart(ctxProd, {
+            type: 'bar',
+            data: {
+                labels: stats.topProducts.slice(0, 5).map(p => p.name.substring(0, 15) + '...'),
+                datasets: [{
+                    label: 'Vistas',
+                    data: stats.topProducts.slice(0, 5).map(p => p.count),
+                    backgroundColor: 'rgba(124, 58, 237, 0.7)',
+                    borderRadius: 4
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+    }
+
+    // Chart 2: Top Cart Products
+    const ctxCart = document.getElementById('chartTopCart');
+    if (ctxCart && stats.topCartProducts.length > 0) {
+        new Chart(ctxCart, {
+            type: 'bar',
+            data: {
+                labels: stats.topCartProducts.slice(0, 5).map(p => p.name.substring(0, 15) + '...'),
+                datasets: [{
+                    label: 'Veces agregado',
+                    data: stats.topCartProducts.slice(0, 5).map(p => p.count),
+                    backgroundColor: 'rgba(14, 165, 233, 0.7)',
+                    borderRadius: 4
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+    }
+
+    // Chart 3: Orders Donut
+    const ctxOrders = document.getElementById('chartOrders');
+    const orders = App.getOrders();
+    const counts = { pendiente: 0, confirmado: 0, enviado: 0, entregado: 0, cancelado: 0 };
+    orders.forEach(o => { counts[o.status] = (counts[o.status] || 0) + 1; });
+    if (ctxOrders && orders.length > 0) {
+        new Chart(ctxOrders, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pendiente', 'Confirmado', 'Enviado', 'Entregado', 'Cancelado'],
+                datasets: [{
+                    data: [counts.pendiente, counts.confirmado, counts.enviado, counts.entregado, counts.cancelado],
+                    backgroundColor: ['#f59e0b', '#22c55e', '#0ea5e9', '#10b981', '#f43f5e']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    // Chart 4: Suppliers Revenue (Calculate from orders)
+    const ctxSuppliers = document.getElementById('chartSuppliers');
+    if (ctxSuppliers) {
+        const suppliersIncome = {};
+        orders.filter(o => o.status !== 'cancelado').forEach(o => {
+            (o.items || []).forEach(item => {
+                const prod = App.getProducts().find(p => p.id === item.productId);
+                if (prod && prod.supplierId) {
+                    const s = App.getSuppliers().find(sup => sup.id === prod.supplierId);
+                    const sName = s ? s.name : 'Desconocido';
+                    suppliersIncome[sName] = (suppliersIncome[sName] || 0) + item.subtotal;
+                }
+            });
+        });
+        const supplierData = Object.entries(suppliersIncome).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        if (supplierData.length > 0) {
+            new Chart(ctxSuppliers, {
+                type: 'bar',
+                data: {
+                    labels: supplierData.map(d => d[0].substring(0,15)),
+                    datasets: [{
+                        label: 'Ingresos (RD$)',
+                        data: supplierData.map(d => d[1]),
+                        backgroundColor: 'rgba(236, 72, 153, 0.7)',
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+    }
   }
 
   window.clearAnalytics = function () {
@@ -922,19 +1028,21 @@ function initAdmin() {
           <div class="form-grid">
             <div class="form-group">
               <label>Subtítulo (ej: LOS RECIÉN LLEGADOS)</label>
-              <input type="text" id="main-subtitle" value="${banners.main.subtitle}" required>
+              <input type="text" id="main-subtitle" value="${App.esc(banners.main.subtitle)}" required>
             </div>
+            <div class="form-grid">
             <div class="form-group">
               <label>Título Grande (ej: VENTA DE VERANO)</label>
-              <input type="text" id="main-title" value="${banners.main.title}" required>
+              <input type="text" id="main-title" value="${App.esc(banners.main.title)}" required>
+            </div>
             </div>
             <div class="form-group">
               <label>Texto Descuento (ej: MIN. 40% DESCUENTO)</label>
-              <input type="text" id="main-discount" value="${banners.main.discount}" required>
+              <input type="text" id="main-discount" value="${App.esc(banners.main.discount)}" required>
             </div>
             <div class="form-group">
               <label>Texto Botón</label>
-              <input type="text" id="main-btnText" value="${banners.main.btnText}" required>
+              <input type="text" id="main-btnText" value="${App.esc(banners.main.btnText)}" required>
             </div>
           </div>
         </div>
@@ -945,19 +1053,19 @@ function initAdmin() {
             <h3>Banner Lateral Superior</h3>
             <div class="form-group">
               <label>Etiqueta</label>
-              <input type="text" id="side1-label" value="${banners.side1.label}" required>
+              <input type="text" id="side1-label" value="${App.esc(banners.side1.label)}" required>
             </div>
             <div class="form-group">
               <label>Título</label>
-              <input type="text" id="side1-title" value="${banners.side1.title}" required>
+              <input type="text" id="side1-title" value="${App.esc(banners.side1.title)}" required>
             </div>
             <div class="form-group">
               <label>Descripción</label>
-              <input type="text" id="side1-desc" value="${banners.side1.desc}" required>
+              <input type="text" id="side1-desc" value="${App.esc(banners.side1.desc)}" required>
             </div>
             <div class="form-group">
               <label>URL Imagen</label>
-              <input type="url" id="side1-image" value="${banners.side1.image}" required>
+              <input type="url" id="side1-image" value="${App.esc(banners.side1.image)}" required>
             </div>
           </div>
 
@@ -966,19 +1074,19 @@ function initAdmin() {
             <h3>Banner Lateral Inferior</h3>
             <div class="form-group">
               <label>Etiqueta</label>
-              <input type="text" id="side2-label" value="${banners.side2.label}" required>
+              <input type="text" id="side2-label" value="${App.esc(banners.side2.label)}" required>
             </div>
             <div class="form-group">
               <label>Título</label>
-              <input type="text" id="side2-title" value="${banners.side2.title}" required>
+              <input type="text" id="side2-title" value="${App.esc(banners.side2.title)}" required>
             </div>
             <div class="form-group">
               <label>Descripción</label>
-              <input type="text" id="side2-desc" value="${banners.side2.desc}" required>
+              <input type="text" id="side2-desc" value="${App.esc(banners.side2.desc)}" required>
             </div>
             <div class="form-group">
               <label>URL Imagen</label>
-              <input type="url" id="side2-image" value="${banners.side2.image}" required>
+              <input type="url" id="side2-image" value="${App.esc(banners.side2.image)}" required>
             </div>
           </div>
         </div>

@@ -28,7 +28,7 @@ function initStore() {
           <div class="hero-slides-container">
             ${mainImages.map((img, i) => `
               <div class="hero-slide ${i === 0 ? 'active' : ''}">
-                <img src="${img}" alt="${banners.main.title}" class="hero-img">
+                <img src="${App.esc(img)}" alt="${App.esc(banners.main.title)}" class="hero-img">
               </div>
             `).join('')}
           </div>
@@ -53,7 +53,7 @@ function initStore() {
               <p class="side-desc">${App.sanitize(banners.side1.desc)}</p>
               <a href="index.html" class="side-link">${App.sanitize(banners.side1.linkText)}</a>
             </div>
-            <img src="${banners.side1.image}" alt="${banners.side1.title}" class="side-img">
+            <img src="${App.esc(banners.side1.image)}" alt="${App.esc(banners.side1.title)}" class="side-img">
           </div>
 
           <div class="side-banner">
@@ -63,7 +63,7 @@ function initStore() {
               <p class="side-desc">${App.sanitize(banners.side2.desc)}</p>
               <a href="index.html" class="side-link">${App.sanitize(banners.side2.linkText)}</a>
             </div>
-            <img src="${banners.side2.image}" alt="${banners.side2.title}" class="side-img">
+            <img src="${App.esc(banners.side2.image)}" alt="${App.esc(banners.side2.title)}" class="side-img">
           </div>
         </div>
       </div>
@@ -177,9 +177,9 @@ function initStore() {
           
           <div class="card-img-slider">
             ${imgs.map(url => `
-              <a href="product.html?id=${product.id}" class="card-img-slide" onclick="${clickTrack}">
+              <a href="product.html?id=${App.esc(product.id)}" class="card-img-slide" onclick="${clickTrack}">
                 <img class="img-skeleton"
-                     data-lazy-src="${url}"
+                     data-lazy-src="${App.esc(url)}"
                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
                      alt="${App.sanitize(product.name)}">
               </a>
@@ -188,7 +188,7 @@ function initStore() {
           </div>
 
           <div class="temu-card-body">
-            <a href="product.html?id=${product.id}" class="product-title line-clamp-2" onclick="${clickTrack}">
+            <a href="product.html?id=${App.esc(product.id)}" class="product-title line-clamp-2" onclick="${clickTrack}">
               ${App.sanitize(product.name)}
             </a>
             

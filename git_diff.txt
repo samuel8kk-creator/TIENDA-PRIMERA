@@ -1,0 +1,2068 @@
+﻿diff --git a/css/styles.css b/css/styles.css
+index 2fb4bdd..eae988b 100644
+--- a/css/styles.css
++++ b/css/styles.css
+@@ -3806,4 +3806,713 @@ textarea:focus {
+ .quick-add-btn:hover {
+   transform: scale(1.1);
+   background: var(--primary-hover);
+-}
+\ No newline at end of file
++}
++
++/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
++   ­ƒîÖ DARK MODE THEME
++   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
++body.dark-theme {
++  --fondo:        #0a071a;
++  --fondo-alt:    #120e2e;
++  --card-bg:      #161238;
++  --blanco:       #161238;
++  --texto:        #e8e4ff;
++  --texto-light:  #a89fd0;
++  --texto-muted:  #6c62a3;
++  --borde:        #2c255c;
++  --borde-focus:  #8b5cf6;
++  --sombra:       rgba(0, 0, 0, 0.4);
++  --sombra-hover: rgba(139, 92, 246, 0.3);
++  --glass-bg:     rgba(22, 18, 56, 0.85);
++  --glass-border: rgba(139, 92, 246, 0.25);
++  --overlay:      rgba(0, 0, 0, 0.75);
++
++  /* Primary-light becomes darker in dark mode */
++  --primary-light: #1e1850;
++  --accent-light:  #0a2e2a;
++  --menta-light:   #0a2e2a;
++  --rosa-light:    #1e1850;
++  --danger-light:  #2d0814;
++  --success-light: #062418;
++  --warning-light: #2a1e00;
++}
++
++/* Dark Mode: key element overrides */
++body.dark-theme .header {
++  background: var(--blanco);
++  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
++}
++
++body.dark-theme .header-nav {
++  background: #0f0b28;
++  border-top: 1px solid var(--borde);
++}
++
++body.dark-theme .search-bar {
++  background: #1a1540;
++  border-color: var(--borde);
++}
++
++body.dark-theme .search-bar input {
++  background: transparent;
++  color: var(--texto);
++}
++
++body.dark-theme .search-results-dropdown {
++  background: #1a1540;
++  border-color: var(--borde);
++}
++
++body.dark-theme .search-result-item:hover {
++  background: #221c4e;
++}
++
++body.dark-theme .product-card,
++body.dark-theme .temu-card {
++  background: #161238;
++  border-color: var(--borde);
++}
++
++body.dark-theme .line-clamp-2 {
++  color: #c8c1ef;
++}
++
++body.dark-theme .temu-card-body {
++  background: #161238;
++}
++
++body.dark-theme .cart-item,
++body.dark-theme .cart-summary,
++body.dark-theme .review-card,
++body.dark-theme .admin-card,
++body.dark-theme .auth-card,
++body.dark-theme .modal {
++  background: #1a1540;
++  border-color: var(--borde);
++}
++
++body.dark-theme .data-table {
++  background: #1a1540;
++  border-color: var(--borde);
++}
++
++body.dark-theme .data-table th {
++  background: #120e2e;
++}
++
++body.dark-theme .data-table tr:hover td {
++  background: #221c4e;
++}
++
++body.dark-theme .admin-content {
++  background: #0a071a;
++}
++
++body.dark-theme .admin-sidebar {
++  background: #0f0b28;
++  border-right-color: var(--borde);
++}
++
++body.dark-theme .side-banner {
++  background: #1a1540;
++}
++
++body.dark-theme .cat-circle {
++  background-color: #1a1540;
++  border-color: var(--borde);
++}
++
++body.dark-theme input,
++body.dark-theme select,
++body.dark-theme textarea {
++  background: #1a1540;
++  border-color: var(--borde);
++  color: var(--texto);
++}
++
++body.dark-theme .toast {
++  background: #1a1540;
++  border-color: var(--borde);
++  color: var(--texto);
++}
++
++body.dark-theme .analytics-kpi-card {
++  background: linear-gradient(135deg, #1a1540 0%, #161238 100%);
++  border-color: rgba(139, 92, 246, 0.2);
++}
++
++body.dark-theme .modal-close:hover {
++  background: #2a1c4a;
++}
++
++body.dark-theme .review-form {
++  background: #120e2e;
++}
++
++body.dark-theme .hero-slide img {
++  filter: brightness(0.85);
++}
++
++/* ÔöÇÔöÇ Dark Mode Toggle Button ÔöÇÔöÇ */
++.theme-toggle-btn {
++  position: fixed;
++  bottom: 90px;
++  right: 20px;
++  width: 50px;
++  height: 50px;
++  border-radius: 50%;
++  background: var(--primary-gradient);
++  color: white;
++  border: none;
++  cursor: pointer;
++  z-index: 2500;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  font-size: 1.4rem;
++  box-shadow: 0 4px 20px rgba(92, 53, 217, 0.45);
++  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
++}
++
++.theme-toggle-btn:hover {
++  transform: scale(1.15) rotate(15deg);
++  box-shadow: 0 8px 28px rgba(92, 53, 217, 0.6);
++}
++
++.theme-toggle-btn .toggle-icon {
++  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
++  display: block;
++}
++
++body.dark-theme .theme-toggle-btn {
++  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
++  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.45);
++}
++
++/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
++   ­ƒøì´©Å WHATSAPP CHECKOUT STEPPER MODAL
++   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
++.checkout-modal-overlay {
++  position: fixed;
++  inset: 0;
++  background: rgba(10, 7, 26, 0.75);
++  backdrop-filter: blur(8px);
++  -webkit-backdrop-filter: blur(8px);
++  z-index: 9000;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  padding: 20px;
++  opacity: 0;
++  visibility: hidden;
++  transition: opacity 0.35s ease, visibility 0.35s ease;
++}
++
++.checkout-modal-overlay.active {
++  opacity: 1;
++  visibility: visible;
++}
++
++.checkout-modal {
++  background: var(--blanco);
++  border-radius: 24px;
++  width: 100%;
++  max-width: 480px;
++  max-height: 90vh;
++  overflow-y: auto;
++  padding: 0;
++  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(92, 53, 217, 0.1);
++  transform: scale(0.92) translateY(24px);
++  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
++  position: relative;
++}
++
++.checkout-modal-overlay.active .checkout-modal {
++  transform: scale(1) translateY(0);
++}
++
++/* Modal Header */
++.cm-header {
++  background: var(--primary-gradient);
++  padding: 28px 28px 20px;
++  border-radius: 24px 24px 0 0;
++  position: relative;
++  overflow: hidden;
++}
++
++.cm-header::before {
++  content: '';
++  position: absolute;
++  top: -40px;
++  right: -30px;
++  width: 150px;
++  height: 150px;
++  background: rgba(255, 255, 255, 0.08);
++  border-radius: 50%;
++}
++
++.cm-header-title {
++  color: white;
++  font-family: 'Outfit', sans-serif;
++  font-size: 1.4rem;
++  font-weight: 700;
++  margin-bottom: 4px;
++  position: relative;
++}
++
++.cm-header-subtitle {
++  color: rgba(255, 255, 255, 0.8);
++  font-size: 0.88rem;
++  position: relative;
++}
++
++/* Step Progress Bar */
++.cm-steps {
++  display: flex;
++  gap: 0;
++  padding: 16px 28px;
++  border-bottom: 1px solid var(--borde);
++  background: var(--fondo-alt);
++}
++
++.cm-step {
++  flex: 1;
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  font-size: 0.82rem;
++  color: var(--texto-muted);
++  font-weight: 500;
++  position: relative;
++}
++
++.cm-step.active {
++  color: var(--primary);
++  font-weight: 700;
++}
++
++.cm-step.done {
++  color: var(--success);
++}
++
++.cm-step-num {
++  width: 26px;
++  height: 26px;
++  border-radius: 50%;
++  background: var(--borde);
++  color: var(--texto-muted);
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  font-size: 0.75rem;
++  font-weight: 700;
++  flex-shrink: 0;
++  transition: all 0.3s ease;
++}
++
++.cm-step.active .cm-step-num {
++  background: var(--primary-gradient);
++  color: white;
++  box-shadow: 0 0 14px rgba(92, 53, 217, 0.4);
++}
++
++.cm-step.done .cm-step-num {
++  background: linear-gradient(135deg, #10b981, #059669);
++  color: white;
++}
++
++.cm-step-connector {
++  width: 30px;
++  height: 2px;
++  background: var(--borde);
++  margin: 0 4px;
++  flex-shrink: 0;
++  border-radius: 2px;
++  transition: background 0.3s ease;
++}
++
++.cm-step-connector.done {
++  background: var(--success);
++}
++
++/* Modal Body */
++.cm-body {
++  padding: 24px 28px;
++}
++
++/* Step Panel */
++.cm-panel {
++  display: none;
++}
++
++.cm-panel.active {
++  display: block;
++  animation: fadeInUp 0.35s ease forwards;
++}
++
++/* Shipping Cards (Step 2) */
++.shipping-cards-grid {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 14px;
++  margin: 16px 0;
++}
++
++.shipping-card {
++  border: 2.5px solid var(--borde);
++  border-radius: 16px;
++  padding: 20px 14px;
++  text-align: center;
++  cursor: pointer;
++  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
++  background: var(--fondo-alt);
++  position: relative;
++  overflow: hidden;
++}
++
++.shipping-card:hover {
++  border-color: var(--primary);
++  transform: translateY(-3px);
++  box-shadow: 0 8px 24px rgba(92, 53, 217, 0.15);
++}
++
++.shipping-card.selected {
++  border-color: var(--primary);
++  background: var(--primary-light);
++  box-shadow: 0 0 0 4px rgba(92, 53, 217, 0.12), 0 8px 20px rgba(92, 53, 217, 0.2);
++}
++
++.shipping-card.selected::after {
++  content: 'Ô£ô';
++  position: absolute;
++  top: 8px;
++  right: 10px;
++  font-size: 0.9rem;
++  font-weight: 800;
++  color: var(--primary);
++}
++
++.sc-emoji {
++  font-size: 2.8rem;
++  display: block;
++  margin-bottom: 10px;
++  animation: vehicle-bob 2s ease-in-out infinite;
++}
++
++.shipping-card.selected .sc-emoji {
++  animation: vehicle-drive 1.2s ease-in-out infinite;
++}
++
++@keyframes vehicle-bob {
++  0%, 100% { transform: translateY(0); }
++  50% { transform: translateY(-5px); }
++}
++
++@keyframes vehicle-drive {
++  0%, 100% { transform: translateY(0) rotate(-5deg); }
++  50% { transform: translateY(-6px) rotate(5deg); }
++}
++
++.sc-label {
++  font-weight: 700;
++  font-size: 0.9rem;
++  color: var(--texto);
++  margin-bottom: 4px;
++}
++
++.sc-price {
++  font-family: 'Outfit', sans-serif;
++  font-size: 1.1rem;
++  font-weight: 800;
++  color: var(--primary);
++}
++
++/* Total preview in step 2 */
++.cm-total-preview {
++  background: linear-gradient(135deg, var(--fondo), var(--primary-light));
++  border: 1px solid var(--borde);
++  border-radius: 14px;
++  padding: 16px 20px;
++  margin-top: 16px;
++}
++
++.cm-total-row {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  font-size: 0.9rem;
++  color: var(--texto-light);
++  margin-bottom: 6px;
++}
++
++.cm-total-row.grand {
++  font-family: 'Outfit', sans-serif;
++  font-size: 1.3rem;
++  font-weight: 800;
++  color: var(--texto);
++  margin-top: 10px;
++  padding-top: 10px;
++  border-top: 2px solid var(--borde);
++}
++
++/* Modal Footer buttons */
++.cm-footer {
++  padding: 0 28px 28px;
++  display: flex;
++  flex-direction: column;
++  gap: 10px;
++}
++
++.cm-btn-back {
++  background: transparent;
++  border: 1.5px solid var(--borde);
++  color: var(--texto-light);
++  padding: 12px;
++  border-radius: 12px;
++  font-weight: 600;
++  font-size: 0.9rem;
++  cursor: pointer;
++  transition: all 0.2s ease;
++}
++
++.cm-btn-back:hover {
++  border-color: var(--primary);
++  color: var(--primary);
++  background: var(--primary-light);
++}
++
++.cm-close-btn {
++  position: absolute;
++  top: 20px;
++  right: 22px;
++  background: rgba(255, 255, 255, 0.2);
++  border: none;
++  width: 32px;
++  height: 32px;
++  border-radius: 50%;
++  color: white;
++  font-size: 1rem;
++  cursor: pointer;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  transition: background 0.2s ease;
++}
++
++.cm-close-btn:hover {
++  background: rgba(255, 255, 255, 0.35);
++}
++
++@media (max-width: 480px) {
++  .checkout-modal {
++    max-width: 100%;
++    border-radius: 20px 20px 0 0;
++    position: fixed;
++    bottom: 0;
++    max-height: 95vh;
++  }
++
++  .checkout-modal-overlay {
++    align-items: flex-end;
++    padding: 0;
++  }
++
++  .shipping-cards-grid {
++    grid-template-columns: 1fr 1fr;
++  }
++}
++
++/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
++   ­ƒôè ADMIN CHARTS (SVG Bar Charts)
++   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
++.admin-chart-section {
++  margin-bottom: 28px;
++}
++
++.admin-charts-grid {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 20px;
++  margin-bottom: 24px;
++}
++
++@media (max-width: 768px) {
++  .admin-charts-grid {
++    grid-template-columns: 1fr;
++  }
++}
++
++.chart-card {
++  background: var(--blanco);
++  border: 1px solid var(--borde);
++  border-radius: 16px;
++  padding: 20px;
++  box-shadow: var(--shadow-sm);
++}
++
++.chart-card h3 {
++  font-size: 1rem;
++  font-weight: 700;
++  margin-bottom: 16px;
++  color: var(--texto);
++  display: flex;
++  align-items: center;
++  gap: 8px;
++}
++
++.bar-chart {
++  display: flex;
++  flex-direction: column;
++  gap: 10px;
++}
++
++.bar-row {
++  display: grid;
++  grid-template-columns: 120px 1fr 45px;
++  align-items: center;
++  gap: 10px;
++}
++
++.bar-label {
++  font-size: 0.78rem;
++  color: var(--texto-light);
++  font-weight: 500;
++  white-space: nowrap;
++  overflow: hidden;
++  text-overflow: ellipsis;
++}
++
++.bar-track {
++  height: 10px;
++  background: var(--fondo);
++  border-radius: 10px;
++  overflow: hidden;
++  position: relative;
++}
++
++.bar-fill {
++  height: 100%;
++  border-radius: 10px;
++  background: var(--primary-gradient);
++  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
++  min-width: 4px;
++}
++
++.bar-fill.accent {
++  background: var(--accent-gradient);
++}
++
++.bar-fill.success {
++  background: linear-gradient(135deg, #10b981, #059669);
++}
++
++.bar-fill.warning {
++  background: linear-gradient(135deg, #f59e0b, #d97706);
++}
++
++.bar-value {
++  font-size: 0.78rem;
++  font-weight: 700;
++  color: var(--primary);
++  text-align: right;
++}
++
++/* Donut Chart (orders status) */
++.donut-chart-wrap {
++  display: flex;
++  align-items: center;
++  gap: 20px;
++  flex-wrap: wrap;
++}
++
++.donut-svg {
++  flex-shrink: 0;
++}
++
++.donut-legend {
++  display: flex;
++  flex-direction: column;
++  gap: 8px;
++  flex: 1;
++  min-width: 120px;
++}
++
++.donut-legend-item {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  font-size: 0.82rem;
++}
++
++.donut-dot {
++  width: 10px;
++  height: 10px;
++  border-radius: 50%;
++  flex-shrink: 0;
++}
++
++.donut-legend-label {
++  flex: 1;
++  color: var(--texto-light);
++}
++
++.donut-legend-count {
++  font-weight: 700;
++  color: var(--texto);
++}
++
++/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
++   ­ƒô┤ ONLINE / OFFLINE CONNECTION BADGE
++   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
++.connection-badge {
++  position: fixed;
++  top: 80px;
++  left: 50%;
++  transform: translateX(-50%) translateY(-20px);
++  background: var(--success);
++  color: white;
++  padding: 8px 20px;
++  border-radius: var(--radius-full);
++  font-size: 0.82rem;
++  font-weight: 700;
++  z-index: 9999;
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
++  opacity: 0;
++  visibility: hidden;
++  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
++  pointer-events: none;
++  white-space: nowrap;
++}
++
++.connection-badge.offline {
++  background: linear-gradient(135deg, #f43f5e, #e11d48);
++  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.4);
++}
++
++.connection-badge.show {
++  opacity: 1;
++  visibility: visible;
++  transform: translateX(-50%) translateY(0);
++}
++
++.connection-badge-dot {
++  width: 8px;
++  height: 8px;
++  border-radius: 50%;
++  background: rgba(255, 255, 255, 0.6);
++  animation: pulse-dot 1.5s ease-in-out infinite;
++}
++
++.connection-badge.offline .connection-badge-dot {
++  animation: none;
++  background: rgba(255, 255, 255, 0.8);
++}
++
++@keyframes pulse-dot {
++  0%, 100% { opacity: 1; transform: scale(1); }
++  50% { opacity: 0.4; transform: scale(0.7); }
++}
++
+\ No newline at end of file
+diff --git a/js/admin.js b/js/admin.js
+index 2a6d0e3..5341683 100644
+--- a/js/admin.js
++++ b/js/admin.js
+@@ -136,17 +136,7 @@ function initAdmin() {
+       const email = document.getElementById('admin-email').value.trim();
+       const password = document.getElementById('admin-password').value;
+ 
+-      // Local Debug Bypass
+-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+-      if (isLocal && email === 'admin@local' && password === 'debug') {
+-          localStorage.setItem('ld_admin_debug', 'true');
+-          App.showToast('Modo Debug Local Activado ­ƒøá´©Å', 'success');
+-          setTimeout(() => location.reload(), 500);
+-          return;
+-      }
+-
+       if (await App.adminLogin(email, password)) {
+-          localStorage.removeItem('ld_admin_debug'); // Clear debug if real login works
+         App.showToast('┬íBienvenido, Admin! ­ƒÄë', 'success');
+         setTimeout(() => location.reload(), 500);
+       } else {
+@@ -293,12 +283,12 @@ function initAdmin() {
+             
+             <div style="display: flex; gap: 20px; align-items: flex-end;">
+               <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid var(--borde); flex-shrink: 0;">
+-                <img src="${cat.image || ''}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src=App.PLACEHOLDER">
++                <img src="${App.esc(cat.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src=App.PLACEHOLDER">
+               </div>
+               <div style="flex: 1;">
+                 <label style="display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--texto-light);">URL de la Imagen (Mujer, Hombre, Ni├▒os, etc.)</label>
+                 <div style="display: flex; gap: 10px;">
+-                  <input type="url" id="cat-img-${cat.id}" value="${cat.image || ''}" placeholder="https://..." style="flex: 1; padding: 8px;">
++                  <input type="url" id="cat-img-${cat.id}" value="${App.esc(cat.image || '')}" placeholder="https://..." style="flex: 1; padding: 8px;">
+                   <button class="btn btn-sm btn-primary" onclick="saveCatImg('${cat.id}')">Guardar Foto</button>
+                 </div>
+               </div>
+@@ -330,12 +320,12 @@ function initAdmin() {
+ 
+             <div style="display: flex; gap: 10px; align-items: flex-end;">
+               <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid var(--borde); flex-shrink: 0;">
+-                <img src="${cat.image || ''}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src=App.PLACEHOLDER">
++                <img src="${App.esc(cat.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src=App.PLACEHOLDER">
+               </div>
+               <div style="flex: 1;">
+                 <label style="display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--texto-light);">URL de la Imagen</label>
+                 <div style="display: flex; gap: 10px;">
+-                  <input type="url" id="cat-img-${cat.id}" value="${cat.image || ''}" placeholder="https://..." style="flex: 1; padding: 8px;">
++                  <input type="url" id="cat-img-${cat.id}" value="${App.esc(cat.image || '')}" placeholder="https://..." style="flex: 1; padding: 8px;">
+                   <button class="btn btn-sm btn-primary" onclick="saveCatImg('${cat.id}')">Guardar Foto</button>
+                 </div>
+               </div>
+@@ -712,7 +702,141 @@ function initAdmin() {
+         </div>
+       </div>
+ 
+-      <!-- Two column grid for tables -->
++      <!-- ÔöÇÔöÇ ­ƒôè Visual Charts ÔöÇÔöÇ -->
++      <div class="admin-charts-grid">
++        <!-- Bar Chart: Top Products Viewed -->
++        <div class="chart-card">
++          <h3>­ƒöÑ Productos M├ís Vistos</h3>
++          ${(() => {
++            if (stats.topProducts.length === 0) return '<p style="color:var(--texto-muted);padding:10px 0;">Sin datos a├║n</p>';
++            const max = stats.topProducts[0].count || 1;
++            return `<div class="bar-chart">
++              ${stats.topProducts.slice(0, 6).map(p => `
++                <div class="bar-row">
++                  <div class="bar-label" title="${App.esc(p.name)}">${App.esc(p.name)}</div>
++                  <div class="bar-track">
++                    <div class="bar-fill" style="width:${Math.round((p.count/max)*100)}%"></div>
++                  </div>
++                  <div class="bar-value">${p.count}</div>
++                </div>
++              `).join('')}
++            </div>`;
++          })()}
++        </div>
++
++        <!-- Bar Chart: Top Cart Products -->
++        <div class="chart-card">
++          <h3>­ƒøÆ M├ís Agregados al Carrito</h3>
++          ${(() => {
++            if (stats.topCartProducts.length === 0) return '<p style="color:var(--texto-muted);padding:10px 0;">Sin datos a├║n</p>';
++            const max = stats.topCartProducts[0].count || 1;
++            return `<div class="bar-chart">
++              ${stats.topCartProducts.slice(0, 6).map(p => `
++                <div class="bar-row">
++                  <div class="bar-label" title="${App.esc(p.name)}">${App.esc(p.name)}</div>
++                  <div class="bar-track">
++                    <div class="bar-fill accent" style="width:${Math.round((p.count/max)*100)}%"></div>
++                  </div>
++                  <div class="bar-value">${p.count}</div>
++                </div>
++              `).join('')}
++            </div>`;
++          })()}
++        </div>
++
++        <!-- Bar Chart: Top Searches -->
++        <div class="chart-card">
++          <h3>­ƒöì B├║squedas Populares</h3>
++          ${(() => {
++            if (stats.topSearches.length === 0) return '<p style="color:var(--texto-muted);padding:10px 0;">Sin datos a├║n</p>';
++            const max = stats.topSearches[0].count || 1;
++            return `<div class="bar-chart">
++              ${stats.topSearches.slice(0, 6).map(s => `
++                <div class="bar-row">
++                  <div class="bar-label" title="${App.esc(s.name)}">"${App.esc(s.name)}"</div>
++                  <div class="bar-track">
++                    <div class="bar-fill warning" style="width:${Math.round((s.count/max)*100)}%"></div>
++                  </div>
++                  <div class="bar-value">${s.count}</div>
++                </div>
++              `).join('')}
++            </div>`;
++          })()}
++        </div>
++
++        <!-- Donut Chart: Orders by Status -->
++        <div class="chart-card">
++          <h3>­ƒøì´©Å Pedidos por Estado</h3>
++          ${(() => {
++            const orders = App.getOrders();
++            const statusColors = {
++              pendiente:  '#f59e0b',
++              confirmado: '#22c55e',
++              enviado:    '#0ea5e9',
++              entregado:  '#10b981',
++              cancelado:  '#f43f5e'
++            };
++            const statusLabels = {
++              pendiente: 'ÔÅ│ Pendiente',
++              confirmado: 'Ô£à Confirmado',
++              enviado: '­ƒÜÜ Enviado',
++              entregado: '­ƒÄë Entregado',
++              cancelado: 'ÔØî Cancelado'
++            };
++            const counts = {};
++            orders.forEach(o => { counts[o.status] = (counts[o.status] || 0) + 1; });
++            const total = orders.length;
++
++            if (total === 0) return '<p style="color:var(--texto-muted);padding:10px 0;">Sin pedidos a├║n</p>';
++
++            // Build SVG donut
++            const radius = 54;
++            const cx = 70, cy = 70;
++            const circumference = 2 * Math.PI * radius;
++            let offset = 0;
++            const segments = Object.entries(counts).map(([status, count]) => {
++              const pct = count / total;
++              const dashLen = pct * circumference;
++              const seg = { status, count, pct, dashLen, offset, color: statusColors[status] || '#9ca3af' };
++              offset += dashLen;
++              return seg;
++            });
++
++            const svgSegments = segments.map(s => `
++              <circle cx="${cx}" cy="${cy}" r="${radius}"
++                fill="none"
++                stroke="${s.color}"
++                stroke-width="20"
++                stroke-dasharray="${s.dashLen} ${circumference - s.dashLen}"
++                stroke-dashoffset="${-s.offset + circumference * 0.25}"
++                transform="rotate(-90 ${cx} ${cy})"
++              />
++            `).join('');
++
++            return `
++              <div class="donut-chart-wrap">
++                <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
++                  <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="var(--borde)" stroke-width="20"/>
++                  ${svgSegments}
++                  <text x="${cx}" y="${cy}" text-anchor="middle" dy="0.4em"
++                    font-family="Outfit,sans-serif" font-size="22" font-weight="800"
++                    fill="var(--texto)">${total}</text>
++                </svg>
++                <div class="donut-legend">
++                  ${segments.map(s => `
++                    <div class="donut-legend-item">
++                      <div class="donut-dot" style="background:${s.color}"></div>
++                      <span class="donut-legend-label">${statusLabels[s.status] || s.status}</span>
++                      <span class="donut-legend-count">${s.count}</span>
++                    </div>
++                  `).join('')}
++                </div>
++              </div>
++            `;
++          })()}
++        </div>
++      </div>
++
+       <div class="analytics-tables-grid">
+ 
+         <!-- Top Products Viewed -->
+@@ -922,19 +1046,21 @@ function initAdmin() {
+           <div class="form-grid">
+             <div class="form-group">
+               <label>Subt├¡tulo (ej: LOS RECI├ëN LLEGADOS)</label>
+-              <input type="text" id="main-subtitle" value="${banners.main.subtitle}" required>
++              <input type="text" id="main-subtitle" value="${App.esc(banners.main.subtitle)}" required>
+             </div>
++            <div class="form-grid">
+             <div class="form-group">
+               <label>T├¡tulo Grande (ej: VENTA DE VERANO)</label>
+-              <input type="text" id="main-title" value="${banners.main.title}" required>
++              <input type="text" id="main-title" value="${App.esc(banners.main.title)}" required>
++            </div>
+             </div>
+             <div class="form-group">
+               <label>Texto Descuento (ej: MIN. 40% DESCUENTO)</label>
+-              <input type="text" id="main-discount" value="${banners.main.discount}" required>
++              <input type="text" id="main-discount" value="${App.esc(banners.main.discount)}" required>
+             </div>
+             <div class="form-group">
+               <label>Texto Bot├│n</label>
+-              <input type="text" id="main-btnText" value="${banners.main.btnText}" required>
++              <input type="text" id="main-btnText" value="${App.esc(banners.main.btnText)}" required>
+             </div>
+           </div>
+         </div>
+@@ -945,19 +1071,19 @@ function initAdmin() {
+             <h3>Banner Lateral Superior</h3>
+             <div class="form-group">
+               <label>Etiqueta</label>
+-              <input type="text" id="side1-label" value="${banners.side1.label}" required>
++              <input type="text" id="side1-label" value="${App.esc(banners.side1.label)}" required>
+             </div>
+             <div class="form-group">
+               <label>T├¡tulo</label>
+-              <input type="text" id="side1-title" value="${banners.side1.title}" required>
++              <input type="text" id="side1-title" value="${App.esc(banners.side1.title)}" required>
+             </div>
+             <div class="form-group">
+               <label>Descripci├│n</label>
+-              <input type="text" id="side1-desc" value="${banners.side1.desc}" required>
++              <input type="text" id="side1-desc" value="${App.esc(banners.side1.desc)}" required>
+             </div>
+             <div class="form-group">
+               <label>URL Imagen</label>
+-              <input type="url" id="side1-image" value="${banners.side1.image}" required>
++              <input type="url" id="side1-image" value="${App.esc(banners.side1.image)}" required>
+             </div>
+           </div>
+ 
+@@ -966,19 +1092,19 @@ function initAdmin() {
+             <h3>Banner Lateral Inferior</h3>
+             <div class="form-group">
+               <label>Etiqueta</label>
+-              <input type="text" id="side2-label" value="${banners.side2.label}" required>
++              <input type="text" id="side2-label" value="${App.esc(banners.side2.label)}" required>
+             </div>
+             <div class="form-group">
+               <label>T├¡tulo</label>
+-              <input type="text" id="side2-title" value="${banners.side2.title}" required>
++              <input type="text" id="side2-title" value="${App.esc(banners.side2.title)}" required>
+             </div>
+             <div class="form-group">
+               <label>Descripci├│n</label>
+-              <input type="text" id="side2-desc" value="${banners.side2.desc}" required>
++              <input type="text" id="side2-desc" value="${App.esc(banners.side2.desc)}" required>
+             </div>
+             <div class="form-group">
+               <label>URL Imagen</label>
+-              <input type="url" id="side2-image" value="${banners.side2.image}" required>
++              <input type="url" id="side2-image" value="${App.esc(banners.side2.image)}" required>
+             </div>
+           </div>
+         </div>
+diff --git a/js/app.js b/js/app.js
+index e878604..35f33a4 100644
+--- a/js/app.js
++++ b/js/app.js
+@@ -16,7 +16,9 @@ const App = {
+         INITIALIZED: 'ld_initialized',
+         ORDERS: 'ld_orders',
+         SUPPLIERS: 'ld_suppliers',
+-        SUPPLIER_PRODUCTS: 'ld_supplier_products'
++        SUPPLIER_PRODUCTS: 'ld_supplier_products',
++        SYNC_TIMESTAMP: 'ld_sync_ts',
++        DARK_MODE: 'ld_dark_mode'
+     },
+ 
+     // ÔöÇÔöÇ SUPABASE ÔöÇÔöÇ
+@@ -24,6 +26,9 @@ const App = {
+     isSyncing: false,
+     isReady: false,
+ 
++    // ÔöÇÔöÇ Sync Cache TTL (5 minutes for guests) ÔöÇÔöÇ
++    SYNC_CACHE_TTL: 5 * 60 * 1000,
++
+     initSupabase() {
+         if (!window.supabase || !window.SUPABASE_CONFIG) {
+             console.warn('[App] Supabase no configurado o cargado');
+@@ -107,16 +112,36 @@ const App = {
+ 
+     async syncWithSupabase() {
+         if (!this.supabase) return;
++
++        // ÔöÇÔöÇ Cache TTL: Skip sync for guests if data is fresh (< 5 min old) ÔöÇÔöÇ
++        const isAdmin = this.isAdminLogged();
++        if (!isAdmin) {
++            const lastSync = localStorage.getItem(this.KEYS.SYNC_TIMESTAMP);
++            if (lastSync && (Date.now() - parseInt(lastSync)) < this.SYNC_CACHE_TTL) {
++                console.log('[App] ­ƒÆ¥ Usando cat├ílogo desde cach├® local (< 5 min)');
++                return;
++            }
++        }
++
+         this.isSyncing = true;
+         try {
+-            const collections = ['products', 'categories', 'banners', 'orders', 'customers'];
++            const collections = isAdmin 
++                ? ['products', 'categories', 'banners', 'orders', 'customers', 'suppliers', 'supplier_products']
++                : ['products', 'categories', 'banners'];
++
+             const syncPromises = collections.map(async (col) => {
+                 const { data, error } = await this.supabase.from(col).select('*');
+                 if (!error && data && data.length > 0) {
+                     const storageKey = this.KEYS[col.toUpperCase()];
+-                    // Banners special handling (usually one row 'main')
+                     if (col === 'banners') {
+                         localStorage.setItem(storageKey, JSON.stringify(data[0].data));
++                    } else if (col === 'orders') {
++                        // Map snake_case from DB back to camelCase in JS
++                        const mappedOrders = data.map(item => {
++                            const { shipping_type, ...rest } = item;
++                            return { ...rest, shippingType: shipping_type };
++                        });
++                        localStorage.setItem(storageKey, JSON.stringify(mappedOrders));
+                     } else {
+                         localStorage.setItem(storageKey, JSON.stringify(data));
+                     }
+@@ -128,7 +153,9 @@ const App = {
+                 }
+             });
+             await Promise.all(syncPromises);
+-            console.log('[App] Sincronizaci├│n completa');
++            // ÔöÇÔöÇ Update sync timestamp after successful sync ÔöÇÔöÇ
++            localStorage.setItem(this.KEYS.SYNC_TIMESTAMP, Date.now().toString());
++            console.log('[App] Ô£à Sincronizaci├│n completa');
+         } catch (e) {
+             console.error('[App] Error de sincronizaci├│n:', e);
+         } finally {
+@@ -140,14 +167,25 @@ const App = {
+         if (!this.supabase) return;
+         const key = this.KEYS[col.toUpperCase()];
+         const localData = JSON.parse(localStorage.getItem(key) || 'null');
+-        if (!localData) return;
++        if (!localData || (Array.isArray(localData) && localData.length === 0)) return;
+ 
+         console.log(`[App] Subiendo datos iniciales a la nube: ${col}`);
+-        if (col === 'banners') {
+-            await this.supabase.from(col).upsert({ id: 'main', data: localData });
+-        } else {
+-            // Bulk upsert
+-            await this.supabase.from(col).upsert(localData);
++        try {
++            if (col === 'banners') {
++                await this.supabase.from(col).upsert({ id: 'main', data: localData });
++            } else {
++                let payload = localData;
++                if (col === 'orders' && Array.isArray(localData)) {
++                    payload = localData.map(item => {
++                        const { shippingType, ...rest } = item;
++                        return { ...rest, shipping_type: shippingType };
++                    });
++                }
++                // Bulk upsert
++                await this.supabase.from(col).upsert(payload);
++            }
++        } catch (e) {
++            console.error(`[App] Error uploading initial data for ${col}:`, e);
+         }
+     },
+ 
+@@ -156,10 +194,24 @@ const App = {
+         try {
+             if (col === 'banners') {
+                 await this.supabase.from(col).upsert({ id: 'main', data: data });
+-            } else if (data && data.id) {
+-                await this.supabase.from(col).upsert(data);
+-            } else if (Array.isArray(data)) {
+-                await this.supabase.from(col).upsert(data);
++            } else {
++                let payload = data;
++                if (col === 'orders') {
++                    if (Array.isArray(data)) {
++                        payload = data.map(item => {
++                            const { shippingType, ...rest } = item;
++                            return { ...rest, shipping_type: shippingType };
++                        });
++                    } else if (data) {
++                        const { shippingType, ...rest } = data;
++                        payload = { ...rest, shipping_type: shippingType };
++                    }
++                }
++                if (payload && payload.id) {
++                    await this.supabase.from(col).upsert(payload);
++                } else if (Array.isArray(payload)) {
++                    await this.supabase.from(col).upsert(payload);
++                }
+             }
+         } catch (e) { console.error('[App] Error al guardar en nube:', e); }
+     },
+@@ -226,12 +278,84 @@ const App = {
+         
+         this.updateCartBadge();
+         this.initGlobalEvents();
++        this.initDarkMode();
++        this.initConnectionBadge();
+         this.isReady = true;
+ 
+         // Emitir evento para avisar a otras partes de que la app est├í lista
+         window.dispatchEvent(new CustomEvent('app-ready'));
+     },
+ 
++    // ÔöÇÔöÇ Dark Mode ÔöÇÔöÇ
++    initDarkMode() {
++        // Apply saved preference
++        const saved = localStorage.getItem(this.KEYS.DARK_MODE);
++        if (saved === 'dark') {
++            document.body.classList.add('dark-theme');
++        }
++
++        // Create the toggle button
++        const btn = document.createElement('button');
++        btn.className = 'theme-toggle-btn';
++        btn.id = 'theme-toggle-btn';
++        btn.setAttribute('aria-label', 'Alternar modo oscuro');
++        btn.setAttribute('title', document.body.classList.contains('dark-theme') ? 'Cambiar a Modo Claro ÔÿÇ´©Å' : 'Cambiar a Modo Oscuro ­ƒîÖ');
++        btn.innerHTML = `<span class="toggle-icon">${document.body.classList.contains('dark-theme') ? 'ÔÿÇ´©Å' : '­ƒîÖ'}</span>`;
++
++        btn.addEventListener('click', () => {
++            const isDark = document.body.classList.toggle('dark-theme');
++            localStorage.setItem(this.KEYS.DARK_MODE, isDark ? 'dark' : 'light');
++            // Animate the icon swap
++            const icon = btn.querySelector('.toggle-icon');
++            icon.style.transform = 'scale(0) rotate(180deg)';
++            setTimeout(() => {
++                icon.textContent = isDark ? 'ÔÿÇ´©Å' : '­ƒîÖ';
++                btn.setAttribute('title', isDark ? 'Cambiar a Modo Claro ÔÿÇ´©Å' : 'Cambiar a Modo Oscuro ­ƒîÖ');
++                icon.style.transform = 'scale(1) rotate(0deg)';
++            }, 200);
++        });
++
++        document.body.appendChild(btn);
++    },
++
++    // ÔöÇÔöÇ Online/Offline Connection Badge ÔöÇÔöÇ
++    initConnectionBadge() {
++        const badge = document.createElement('div');
++        badge.className = 'connection-badge';
++        badge.id = 'connection-badge';
++        badge.innerHTML = `<div class="connection-badge-dot"></div><span id="connection-badge-msg">Conectado</span>`;
++        document.body.appendChild(badge);
++
++        let hideTimer = null;
++
++        const showBadge = (msg, isOffline = false) => {
++            const msgEl = badge.querySelector('#connection-badge-msg');
++            msgEl.textContent = msg;
++            badge.classList.toggle('offline', isOffline);
++            badge.classList.add('show');
++            clearTimeout(hideTimer);
++            if (!isOffline) {
++                // Auto-hide online message after 3 seconds
++                hideTimer = setTimeout(() => badge.classList.remove('show'), 3000);
++            }
++        };
++
++        window.addEventListener('offline', () => {
++            showBadge('­ƒô┤ Sin conexi├│n ÔÇö Modo offline activo', true);
++        });
++
++        window.addEventListener('online', () => {
++            showBadge('Ô£à Conexi├│n restaurada');
++            // Invalidate cache to force re-sync when back online
++            localStorage.removeItem(this.KEYS.SYNC_TIMESTAMP);
++        });
++
++        // If already offline when page loads
++        if (!navigator.onLine) {
++            showBadge('­ƒô┤ Sin conexi├│n ÔÇö Modo offline activo', true);
++        }
++    },
++
+     initGlobalEvents() {
+         // Shared global events for all pages
+         document.addEventListener('click', (e) => {
+@@ -262,10 +386,15 @@ const App = {
+             }
+         });
+ 
+-        // ÔöÇÔöÇ Global Live Search Logic ÔöÇÔöÇ
++        // ÔöÇÔöÇ Global Live Search Logic ÔÇö con debounce 300ms (OPT-005) ÔöÇÔöÇ
++        let _searchDebounceTimer = null;
+         document.addEventListener('input', (e) => {
+             if (e.target.id === 'search-input-header') {
+-                this.handleLiveSearch(e.target.value.trim());
++                clearTimeout(_searchDebounceTimer);
++                const term = e.target.value.trim();
++                _searchDebounceTimer = setTimeout(() => {
++                    this.handleLiveSearch(term);
++                }, 300);
+             }
+         });
+     },
+@@ -390,12 +519,64 @@ const App = {
+     },
+ 
+     async hashPassword(password, email = '') {
+-        // Use salted hashing: password + email (unique) + internal salt
+-        const combined = password + (email.toLowerCase()) + this._S;
+-        const msgUint8 = new TextEncoder().encode(combined);
+-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+-        const hashArray = Array.from(new Uint8Array(hashBuffer));
+-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
++        // SECURITY FIX: Usar PBKDF2 (100,000 iteraciones) en lugar de SHA-256 plano.
++        // SHA-256 es una funci├│n hash r├ípida ÔÇö NO adecuada para contrase├▒as.
++        // PBKDF2 hace el ataque de fuerza bruta ~100,000x m├ís costoso.
++        try {
++            const encoder = new TextEncoder();
++            const keyMaterial = await crypto.subtle.importKey(
++                'raw',
++                encoder.encode(password),
++                { name: 'PBKDF2' },
++                false,
++                ['deriveBits']
++            );
++            // Salt ├║nico por usuario = email normalizado + salt interno
++            const saltStr = email.toLowerCase() + this._S;
++            const salt = encoder.encode(saltStr);
++            const bits = await crypto.subtle.deriveBits(
++                { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 100_000 },
++                keyMaterial,
++                256
++            );
++            return Array.from(new Uint8Array(bits))
++                .map(b => b.toString(16).padStart(2, '0')).join('');
++        } catch (e) {
++            // Fallback si el browser no soporta crypto.subtle (muy poco probable)
++            console.error('[Security] PBKDF2 fall├│, usando fallback SHA-256:', e);
++            const combined = password + email.toLowerCase() + this._S;
++            const msgUint8 = new TextEncoder().encode(combined);
++            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
++            return Array.from(new Uint8Array(hashBuffer))
++                .map(b => b.toString(16).padStart(2, '0')).join('');
++        }
++    },
++
++    // ÔöÇÔöÇ URL Validation (Security) ÔöÇÔöÇ
++    validateImageUrl(url) {
++        // SECURITY FIX: Prevenir javascript: y data: URLs como fuente de im├ígenes
++        if (!url || typeof url !== 'string') return false;
++        const trimmed = url.trim();
++        if (!trimmed) return false;
++        // Bloquear protocolos peligrosos
++        const dangerousProtocols = ['javascript:', 'vbscript:', 'data:text', 'data:application'];
++        const lower = trimmed.toLowerCase();
++        if (dangerousProtocols.some(p => lower.startsWith(p))) return false;
++        // Permitir: https://, rutas relativas, data:image/ (para previews base64)
++        if (trimmed.startsWith('https://') ||
++            trimmed.startsWith('/') ||
++            trimmed.startsWith('./') ||
++            trimmed.startsWith('../') ||
++            trimmed.startsWith('data:image/')) {
++            return true;
++        }
++        // Intentar parsear como URL para validar estructura
++        try {
++            const parsed = new URL(trimmed);
++            return parsed.protocol === 'https:';
++        } catch {
++            return false;
++        }
+     },
+ 
+     seedData() {
+@@ -447,7 +628,18 @@ const App = {
+ 
+     getCurrentUser() {
+         const u = localStorage.getItem(this.KEYS.CURRENT_USER);
+-        return u ? JSON.parse(u) : null;
++        if (!u) return null;
++        try {
++            const parsed = JSON.parse(u);
++            // SECURITY FIX: Verificar expiraci├│n de sesi├│n (TTL 24h)
++            if (parsed._sessionExpiry && Date.now() > parsed._sessionExpiry) {
++                this.logoutCustomer(); // Auto-logout al expirar
++                return null;
++            }
++            // Retornar sin el campo interno de expiraci├│n
++            const { _sessionExpiry, password: _pwd, ...user } = parsed;
++            return user;
++        } catch { return null; }
+     },
+ 
+     getProduct(id) {
+@@ -510,7 +702,14 @@ const App = {
+ 
+     setCurrentUser(user) {
+         if (user) {
+-            localStorage.setItem(this.KEYS.CURRENT_USER, JSON.stringify(user));
++            // SECURITY FIX: A├▒adir TTL de 24h a la sesi├│n del cliente
++            // y asegurar que nunca se guarde el hash de contrase├▒a
++            const { password: _pwd, ...safeUser } = user;
++            const sessionData = {
++                ...safeUser,
++                _sessionExpiry: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
++            };
++            localStorage.setItem(this.KEYS.CURRENT_USER, JSON.stringify(sessionData));
+         } else {
+             localStorage.removeItem(this.KEYS.CURRENT_USER);
+         }
+@@ -707,19 +906,43 @@ const App = {
+ 
+     // ÔöÇÔöÇ Customer Auth ÔöÇÔöÇ
+     async registerCustomer(data) {
+-        const customers = this.getCustomers();
+-        if (customers.find(c => c.email === data.email)) {
+-            return { success: false, message: 'Este correo ya est├í registrado.' };
++        if (data.email) data.email = data.email.trim();
++        if (this.supabase) {
++            const { data: exists, error: checkError } = await this.supabase.rpc('check_email_exists', {
++                p_email: data.email
++            });
++            if (checkError) {
++                console.error('[App] Error checking email:', checkError.message);
++                return { success: false, message: 'Error de conexi├│n con el servidor.' };
++            }
++            if (exists) {
++                return { success: false, message: 'Este correo ya est├í registrado.' };
++            }
++        } else {
++            const customers = this.getCustomers();
++            if (customers.find(c => c.email === data.email)) {
++                return { success: false, message: 'Este correo ya est├í registrado.' };
++            }
+         }
++
+         data.id = 'c' + Date.now();
+-        data.registered = new Date().toISOString();
++        data.registered_at = new Date().toISOString();
++        data.registered = data.registered_at;
+ 
+         // Hash password before saving (Security Salted)
+         data.password = await this.hashPassword(data.password, data.email);
+ 
++        if (this.supabase) {
++            const { error: insertError } = await this.supabase.from('customers').insert([data]);
++            if (insertError) {
++                console.error('[App] Error in customers insert:', insertError.message);
++                return { success: false, message: 'Error al registrar usuario en la nube.' };
++            }
++        }
++
++        const customers = this.getCustomers();
+         customers.push(data);
+         this.saveCustomers(customers);
+-        this.saveToCloud('customers', data);
+         this.setCurrentUser(data);
+ 
+         // Trigger mailto
+@@ -729,12 +952,42 @@ const App = {
+     },
+ 
+     async loginCustomer(email, password) {
+-        const customers = this.getCustomers();
+         const hashedPassword = await this.hashPassword(password, email);
+-        const user = customers.find(c => c.email === email && (c.password === hashedPassword));
+-        if (user) {
+-            this.setCurrentUser(user);
+-            return { success: true, user };
++        if (this.supabase) {
++            const { data, error } = await this.supabase.rpc('check_customer_login', {
++                p_email: email.trim(),
++                p_password_hash: hashedPassword
++            });
++            if (error) {
++                console.error('[App] Error in customer login:', error.message);
++                return { success: false, message: 'Error de conexi├│n con el servidor.' };
++            }
++            if (data && data.length > 0) {
++                const user = data[0];
++                // SECURITY FIX: Nunca guardar el hash de contrase├▒a en localStorage
++                const { password: _pwd, ...safeUser } = user;
++                this.setCurrentUser(safeUser);
++
++                const customers = this.getCustomers();
++                const idx = customers.findIndex(c => c.email === safeUser.email);
++                if (idx !== -1) {
++                    // Tambi├®n limpiar hash en la lista local de clientes
++                    const { password: _p, ...safeExisting } = customers[idx];
++                    customers[idx] = { ...safeExisting, ...safeUser };
++                } else {
++                    customers.push(safeUser);
++                }
++                this.saveCustomers(customers);
++
++                return { success: true, user: safeUser };
++            }
++        } else {
++            const customers = this.getCustomers();
++            const user = customers.find(c => c.email === email && (c.password === hashedPassword));
++            if (user) {
++                this.setCurrentUser(user);
++                return { success: true, user };
++            }
+         }
+         return { success: false, message: 'Correo o contrase├▒a incorrectos.' };
+     },
+@@ -796,12 +1049,6 @@ const App = {
+     isAdminLogged() {
+         if (!this.supabase) return false;
+         
+-        // Debug Bypass for Local Development
+-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+-        if (isLocal && localStorage.getItem('ld_admin_debug') === 'true') {
+-            return true;
+-        }
+-
+         try {
+             const projectId = window.SUPABASE_CONFIG.URL.split('//')[1].split('.')[0];
+             const sessionStr = localStorage.getItem(`sb-${projectId}-auth-token`);
+@@ -991,29 +1238,7 @@ const App = {
+         </div>
+       </div>
+ 
+-      <script>
+-        // Auto-populate category dropdown ÔÇö XSS-safe via DOM API
+-        setTimeout(() => {
+-          const select = document.getElementById('header-cat-select');
+-          if (!select) return;
+-          try {
+-            const categories = JSON.parse(localStorage.getItem('ld_categories') || '[]');
+-            // Clear existing options safely
+-            select.innerHTML = '';
+-            const allOpt = document.createElement('option');
+-            allOpt.value = 'all';
+-            allOpt.textContent = 'Todas las Categor├¡as';
+-            select.appendChild(allOpt);
+-            categories.filter(c => c.isActive).forEach(c => {
+-              const opt = document.createElement('option');
+-              opt.value = c.id;  // safe: set as property, not HTML
+-              // BUG FIX: safeEmoji and safeName were undefined ÔÇö fixed below
+-              opt.textContent = (c.emoji || '') + ' ' + (c.name || c.id);
+-              select.appendChild(opt);
+-            });
+-          } catch(e) { console.warn('Header categories error:', e); }
+-        }, 0);
+-      </script>
++      <!-- SECURITY FIX: Script inline eliminado ÔÇö ahora se llama populateCategorySelect() desde JS -->
+ 
+       <!-- Navigation Bar -->
+       <nav class="header-nav">
+@@ -1035,6 +1260,28 @@ const App = {
+         </div>
+       </nav>
+     </header>`;
++        setTimeout(() => this.populateCategorySelect(), 0);
++        return html;
++    },
++
++    // ÔöÇÔöÇ Populate Category Dropdown (XSS-safe, sin script inline) ÔöÇÔöÇ
++    populateCategorySelect() {
++        const select = document.getElementById('header-cat-select');
++        if (!select) return;
++        try {
++            const categories = this.getCategories().filter(c => c.isActive);
++            select.innerHTML = '';
++            const allOpt = document.createElement('option');
++            allOpt.value = 'all';
++            allOpt.textContent = 'Todas las Categor├¡as';
++            select.appendChild(allOpt);
++            categories.forEach(c => {
++                const opt = document.createElement('option');
++                opt.value = c.id;
++                opt.textContent = (c.emoji || '') + ' ' + (c.name || c.id);
++                select.appendChild(opt);
++            });
++        } catch (e) { }
+     },
+ 
+     // ÔöÇÔöÇ Common Footer HTML ÔöÇÔöÇ
+@@ -1118,6 +1365,7 @@ const App = {
+         };
+         suppliers.push(supplier);
+         localStorage.setItem(this.KEYS.SUPPLIERS, JSON.stringify(suppliers));
++        this.saveToCloud('suppliers', supplier);
+         return supplier;
+     },
+ 
+@@ -1140,8 +1388,6 @@ const App = {
+         let links = this.getSupplierProducts();
+         links = links.filter(lp => lp.supplier_id !== id);
+         localStorage.setItem(this.KEYS.SUPPLIER_PRODUCTS, JSON.stringify(links));
+-        // We delete from cloud if table exists
+-        this.deleteFromCloud('supplier_products', id); 
+     },
+ 
+     getSupplierProducts() {
+@@ -1160,25 +1406,33 @@ const App = {
+     linkProductToSupplier(supplierId, productId, costPrice) {
+         const links = this.getSupplierProducts();
+         const existingIdx = links.findIndex(lp => lp.product_id === productId);
++        let linkObj;
+         if (existingIdx !== -1) {
+             links[existingIdx].supplier_id = supplierId;
+             links[existingIdx].cost_price = parseFloat(costPrice) || 0;
++            linkObj = links[existingIdx];
+         } else {
+-            links.push({
++            linkObj = {
+                 id: 'LP-' + Date.now(),
+                 supplier_id: supplierId,
+                 product_id: productId,
+                 cost_price: parseFloat(costPrice) || 0,
+                 linked_at: new Date().toISOString()
+-            });
++            };
++            links.push(linkObj);
+         }
+         localStorage.setItem(this.KEYS.SUPPLIER_PRODUCTS, JSON.stringify(links));
++        this.saveToCloud('supplier_products', linkObj);
+     },
+ 
+     unlinkProductFromSupplier(productId) {
+         let links = this.getSupplierProducts();
+-        links = links.filter(lp => lp.product_id !== productId);
+-        localStorage.setItem(this.KEYS.SUPPLIER_PRODUCTS, JSON.stringify(links));
++        const linkToDelete = links.find(lp => lp.product_id === productId);
++        if (linkToDelete) {
++            links = links.filter(lp => lp.product_id !== productId);
++            localStorage.setItem(this.KEYS.SUPPLIER_PRODUCTS, JSON.stringify(links));
++            this.deleteFromCloud('supplier_products', linkToDelete.id);
++        }
+     },
+ 
+     // ÔöÇÔöÇ Smart Similar Products (Autom├ítico por Familia/Parentesco) ÔöÇÔöÇ
+diff --git a/js/cart.js b/js/cart.js
+index 6d6e74e..bb226a0 100644
+--- a/js/cart.js
++++ b/js/cart.js
+@@ -122,7 +122,7 @@ function initCart() {
+             <span>${App.formatPrice(total)}</span>
+           </div>
+ 
+-          <button class="btn btn-whatsapp btn-block mt-2" onclick="finalizarPedido()">
++          <button class="btn btn-whatsapp btn-block mt-2" onclick="window.openCheckoutModal()">
+             ­ƒô▒ Finalizar Pedido por WhatsApp
+           </button>
+ 
+@@ -159,14 +159,234 @@ function initCart() {
+     renderCart();
+   };
+ 
+-  window.finalizarPedido = function () {
++  // ÔöÇÔöÇ WhatsApp Checkout Stepper Modal ÔöÇÔöÇ
++  function injectCheckoutModal() {
++    if (document.getElementById('checkout-modal-overlay')) return;
++    const el = document.createElement('div');
++    el.innerHTML = `
++      <div id="checkout-modal-overlay" class="checkout-modal-overlay">
++        <div class="checkout-modal">
++          <!-- Header -->
++          <div class="cm-header">
++            <button class="cm-close-btn" id="cm-close-btn" aria-label="Cerrar">Ô£ò</button>
++            <div class="cm-header-title">­ƒøì´©Å Finalizar Pedido</div>
++            <div class="cm-header-subtitle">Solo 2 pasos para completar tu compra</div>
++          </div>
++
++          <!-- Steps indicator -->
++          <div class="cm-steps">
++            <div class="cm-step active" id="cm-step-1">
++              <div class="cm-step-num">1</div>
++              <span>Resumen</span>
++            </div>
++            <div class="cm-step-connector" id="cm-connector"></div>
++            <div class="cm-step" id="cm-step-2">
++              <div class="cm-step-num">2</div>
++              <span>Env├¡o</span>
++            </div>
++          </div>
++
++          <!-- PANEL 1: Cart Summary -->
++          <div class="cm-body">
++            <div class="cm-panel active" id="cm-panel-1">
++              <p style="font-size:0.88rem; color:var(--texto-muted); margin-bottom:14px;">Revisa tu pedido antes de continuar</p>
++              <div id="cm-items-list" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;"></div>
++              <div style="margin-top:16px;padding-top:14px;border-top:2px solid var(--borde);display:flex;justify-content:space-between;align-items:center;">
++                <span style="font-size:0.92rem;color:var(--texto-light);">Subtotal</span>
++                <span id="cm-subtotal" style="font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:800;color:var(--primary);"></span>
++              </div>
++            </div>
++
++            <!-- PANEL 2: Shipping Selection -->
++            <div class="cm-panel" id="cm-panel-2">
++              <p style="font-size:0.88rem; color:var(--texto-muted); margin-bottom:4px;">┬┐D├│nde te enviamos tu pedido?</p>
++              <div class="shipping-cards-grid">
++                <div class="shipping-card selected" id="sc-sd" onclick="window.selectShippingCard('santo-domingo')">
++                  <span class="sc-emoji">­ƒøÁ</span>
++                  <div class="sc-label">Santo Domingo</div>
++                  <div class="sc-price">${App.formatPrice(App.SHIPPING.SANTO_DOMINGO)}</div>
++                </div>
++                <div class="shipping-card" id="sc-ext" onclick="window.selectShippingCard('exterior')">
++                  <span class="sc-emoji">­ƒÜÜ</span>
++                  <div class="sc-label">Provincias</div>
++                  <div class="sc-price">${App.formatPrice(App.SHIPPING.EXTERIOR)}</div>
++                </div>
++              </div>
++              <div class="cm-total-preview">
++                <div class="cm-total-row">
++                  <span>Subtotal</span>
++                  <span id="cm-total-subtotal"></span>
++                </div>
++                <div class="cm-total-row">
++                  <span>Env├¡o</span>
++                  <span id="cm-total-shipping"></span>
++                </div>
++                <div class="cm-total-row grand">
++                  <span>TOTAL</span>
++                  <span id="cm-total-grand" style="color:var(--primary);"></span>
++                </div>
++              </div>
++            </div>
++          </div>
++
++          <!-- Footer actions -->
++          <div class="cm-footer">
++            <button class="btn btn-whatsapp btn-block" id="cm-action-btn" onclick="window.cmActionBtn()">
++              Continuar ÔåÆ Elegir Env├¡o
++            </button>
++            <button class="cm-btn-back hidden" id="cm-back-btn" onclick="window.cmGoBack()">
++              ÔåÉ Volver al resumen
++            </button>
++          </div>
++        </div>
++      </div>
++    `;
++    document.body.appendChild(el.firstElementChild);
++
++    // Close button
++    document.getElementById('cm-close-btn').addEventListener('click', window.closeCheckoutModal);
++    document.getElementById('checkout-modal-overlay').addEventListener('click', (e) => {
++      if (e.target.id === 'checkout-modal-overlay') window.closeCheckoutModal();
++    });
++  }
++
++  // Modal state
++  let cmStep = 1;
++  let cmShipping = 'santo-domingo';
++
++  window.openCheckoutModal = function() {
++    const cart = App.getCart();
++    const products = App.getProducts();
++    if (cart.length === 0) {
++      App.showToast('Tu carrito est├í vac├¡o', 'error');
++      return;
++    }
++
++    // Validate sizes first
++    const missingSize = cart.find(item => {
++      const p = products.find(prod => prod.id === item.productId);
++      return p && p.sizes && p.sizes.length > 0 && !item.size;
++    });
++
++    if (missingSize) {
++      const p = products.find(prod => prod.id === missingSize.productId);
++      App.showToast(`Por favor selecciona la talla para: ${p.name}`, 'error');
++      setTimeout(() => { window.location.href = `product.html?id=${p.id}`; }, 1500);
++      return;
++    }
++
++    injectCheckoutModal();
++
++    // Populate step 1 items
++    let subtotal = 0;
++    const itemsHtml = cart.map(item => {
++      const p = products.find(pr => pr.id === item.productId);
++      if (!p) return '';
++      const itemTotal = p.price * item.qty;
++      subtotal += itemTotal;
++      const img = (p.images && p.images[0]) || p.image || '';
++      const variantStr = [item.size && `Talla: ${App.esc(item.size)}`, item.color && `Color: ${App.esc(item.color)}`].filter(Boolean).join(' ┬À ');
++      return `
++        <div style="display:flex;gap:12px;align-items:center;background:var(--fondo-alt);border-radius:12px;padding:10px;">
++          <img src="${App.esc(img)}" alt="" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;" onerror="this.style.display='none'">
++          <div style="flex:1;min-width:0;">
++            <div style="font-weight:600;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${App.esc(p.name)}</div>
++            ${variantStr ? `<div style="font-size:0.76rem;color:var(--texto-muted);">${variantStr}</div>` : ''}
++            <div style="font-size:0.82rem;color:var(--texto-light);">├ù ${item.qty}</div>
++          </div>
++          <div style="font-weight:800;font-family:'Outfit',sans-serif;color:var(--primary);white-space:nowrap;">${App.formatPrice(itemTotal)}</div>
++        </div>
++      `;
++    }).join('');
++
++    document.getElementById('cm-items-list').innerHTML = itemsHtml;
++    document.getElementById('cm-subtotal').textContent = App.formatPrice(subtotal);
++
++    // Reset to step 1
++    cmStep = 1;
++    cmShipping = 'santo-domingo';
++    document.getElementById('cm-panel-1').classList.add('active');
++    document.getElementById('cm-panel-2').classList.remove('active');
++    document.getElementById('cm-step-1').classList.add('active');
++    document.getElementById('cm-step-1').classList.remove('done');
++    document.getElementById('cm-step-2').classList.remove('active', 'done');
++    document.getElementById('cm-connector').classList.remove('done');
++    document.getElementById('cm-action-btn').textContent = 'Continuar ÔåÆ Elegir Env├¡o';
++    document.getElementById('cm-action-btn').className = 'btn btn-primary btn-block';
++    document.getElementById('cm-back-btn').classList.add('hidden');
++
++    document.getElementById('checkout-modal-overlay').classList.add('active');
++    document.body.style.overflow = 'hidden';
++  };
++
++  window.closeCheckoutModal = function() {
++    const overlay = document.getElementById('checkout-modal-overlay');
++    if (overlay) overlay.classList.remove('active');
++    document.body.style.overflow = '';
++  };
++
++  window.selectShippingCard = function(type) {
++    cmShipping = type;
++    document.getElementById('sc-sd').classList.toggle('selected', type === 'santo-domingo');
++    document.getElementById('sc-ext').classList.toggle('selected', type === 'exterior');
++    // Update totals
++    const cart = App.getCart();
++    const products = App.getProducts();
++    const subtotal = cart.reduce((s, item) => {
++      const p = products.find(pr => pr.id === item.productId);
++      return s + (p ? p.price * item.qty : 0);
++    }, 0);
++    const shipping = type === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
++    document.getElementById('cm-total-subtotal').textContent = App.formatPrice(subtotal);
++    document.getElementById('cm-total-shipping').textContent = App.formatPrice(shipping);
++    document.getElementById('cm-total-grand').textContent = App.formatPrice(subtotal + shipping);
++  };
++
++  window.cmActionBtn = function() {
++    if (cmStep === 1) {
++      // Move to step 2
++      cmStep = 2;
++      document.getElementById('cm-panel-1').classList.remove('active');
++      document.getElementById('cm-panel-2').classList.add('active');
++      document.getElementById('cm-step-1').classList.remove('active');
++      document.getElementById('cm-step-1').classList.add('done');
++      document.getElementById('cm-step-1').querySelector('.cm-step-num').textContent = 'Ô£ô';
++      document.getElementById('cm-step-2').classList.add('active');
++      document.getElementById('cm-connector').classList.add('done');
++      document.getElementById('cm-action-btn').innerHTML = '­ƒô▒ Finalizar Pedido por WhatsApp';
++      document.getElementById('cm-action-btn').className = 'btn btn-whatsapp btn-block';
++      document.getElementById('cm-back-btn').classList.remove('hidden');
++      // Pre-populate totals
++      window.selectShippingCard(cmShipping);
++    } else {
++      // Finalize: Step 2 ÔåÆ WhatsApp
++      window.closeCheckoutModal();
++      window.finalizarPedido(cmShipping);
++    }
++  };
++
++  window.cmGoBack = function() {
++    cmStep = 1;
++    document.getElementById('cm-panel-2').classList.remove('active');
++    document.getElementById('cm-panel-1').classList.add('active');
++    document.getElementById('cm-step-1').classList.add('active');
++    document.getElementById('cm-step-1').classList.remove('done');
++    document.getElementById('cm-step-1').querySelector('.cm-step-num').textContent = '1';
++    document.getElementById('cm-step-2').classList.remove('active');
++    document.getElementById('cm-connector').classList.remove('done');
++    document.getElementById('cm-action-btn').textContent = 'Continuar ÔåÆ Elegir Env├¡o';
++    document.getElementById('cm-action-btn').className = 'btn btn-primary btn-block';
++    document.getElementById('cm-back-btn').classList.add('hidden');
++  };
++
++  window.finalizarPedido = function (selectedShipping) {
++    const resolvedShipping = selectedShipping || shippingType;
+     const cart = App.getCart();
+     if (cart.length === 0) {
+       App.showToast('Tu carrito est├í vac├¡o', 'error');
+       return;
+     }
+ 
+-    // Final security check: Ensure all items that need sizes have them
+     const products = App.getProducts();
+     const missingSize = cart.find(item => {
+       const p = products.find(prod => prod.id === item.productId);
+@@ -176,13 +396,10 @@ function initCart() {
+     if (missingSize) {
+       const p = products.find(prod => prod.id === missingSize.productId);
+       App.showToast(`Por favor selecciona la talla para: ${p.name}`, 'error');
+-      setTimeout(() => {
+-        window.location.href = `product.html?id=${p.id}`;
+-      }, 1500);
++      setTimeout(() => { window.location.href = `product.html?id=${p.id}`; }, 1500);
+       return;
+     }
+ 
+-    // Build order data for admin panel record
+     const orderItems = cart.map(item => {
+       const p = products.find(pr => pr.id === item.productId);
+       const itemTotal = (p ? p.price : 0) * item.qty;
+@@ -198,25 +415,23 @@ function initCart() {
+       };
+     });
+ 
+-    const shipping = shippingType === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
++    const shipping = resolvedShipping === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
+     const subtotal = orderItems.reduce((s, i) => s + i.subtotal, 0);
+     const total = subtotal + shipping;
+     const user = App.getCurrentUser();
+ 
+-    // Save order to localStorage
+     App.saveOrder({
+       items: orderItems,
+       subtotal,
+       shipping,
+-      shippingType,
++      shippingType: resolvedShipping,
+       total,
+       customer: user ? { name: user.name, email: user.email, phone: user.phone || null } : null
+     });
+ 
+-    // Track checkout
+     const cartItems = orderItems.map(i => ({ name: i.name, qty: i.qty, price: i.price, size: i.size }));
+-    Analytics.trackCheckout(cartItems, total, shippingType);
+-    App.sendToWhatsApp(shippingType);
++    Analytics.trackCheckout(cartItems, total, resolvedShipping);
++    App.sendToWhatsApp(resolvedShipping);
+   };
+ 
+   renderCart();
+diff --git a/js/product.js b/js/product.js
+index 22306bf..e15d3c1 100644
+--- a/js/product.js
++++ b/js/product.js
+@@ -73,7 +73,7 @@ function initProduct() {
+           <div class="pg-track" id="pg-track">
+             ${images.map((img, i) => `
+               <div class="pg-slide">
+-                <img src="${img}" alt="${App.sanitize(product.name)} - foto ${i+1}"
++                <img src="${App.esc(img)}" alt="${App.esc(product.name)} - foto ${i+1}"
+                      onerror="this.onerror=null; this.src=App.PLACEHOLDER;">
+               </div>
+             `).join('')}
+@@ -85,13 +85,13 @@ function initProduct() {
+         <div class="thumbnail-strip">
+           ${images.map((img, i) => `
+             <div class="thumb ${i === 0 ? 'active' : ''}" data-index="${i}">
+-              <img src="${img}" onerror="this.onerror=null; this.src=App.PLACEHOLDER;">
++              <img src="${App.esc(img)}" onerror="this.onerror=null; this.src=App.PLACEHOLDER;">
+             </div>
+           `).join('')}
+         </div>
+       ` : `
+         <div class="main-image-wrap">
+-          <img src="${images[0]}" alt="${App.sanitize(product.name)}" id="main-product-img"
++          <img src="${App.esc(images[0])}" alt="${App.esc(product.name)}" id="main-product-img"
+                onerror="this.onerror=null; this.src=App.PLACEHOLDER;">
+         </div>
+       `}
+@@ -455,8 +455,8 @@ function initProduct() {
+             ${photos.length > 0 ? `
+               <div class="review-media-grid">
+                 ${photos.map(m => `
+-                  <div class="review-media-item" onclick="openMediaLightbox('${m.src}','photo')">
+-                    <img src="${m.src}" alt="Foto de la rese├▒a" loading="lazy" onerror="this.parentElement.style.display='none'">
++                  <div class="review-media-item" onclick="openMediaLightbox('${App.esc(m.src)}','photo')">
++                    <img src="${App.esc(m.src)}" alt="Foto de la rese├▒a" loading="lazy" onerror="this.parentElement.style.display='none'">
+                     <div class="media-play-overlay" style="display:none;"></div>
+                   </div>`).join('')}
+               </div>` : ''}
+@@ -465,15 +465,15 @@ function initProduct() {
+               <div class="review-video-wrap">
+                 ${(video.isLocal || video.src.startsWith('data:')) ? `
+                   <video controls style="width:100%;border-radius:10px;max-height:280px;background:#000;">
+-                    <source src="${video.src}">
++                    <source src="${App.esc(video.src)}">
+                     Tu navegador no soporta video.
+                   </video>` :
+                   (video.src.includes('youtube') || video.src.includes('youtu.be')) ? `
+-                  <iframe src="${video.src.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/')}"
++                  <iframe src="${App.esc(video.src.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/'))}"
+                     frameborder="0" allow="autoplay; encrypted-media" allowfullscreen
+                     style="width:100%;aspect-ratio:16/9;border-radius:10px;"></iframe>` : `
+                   <video controls style="width:100%;border-radius:10px;max-height:280px;">
+-                    <source src="${video.src}">
++                    <source src="${App.esc(video.src)}">
+                     Tu navegador no soporta video.
+                   </video>`}
+               </div>` : ''}
+@@ -607,7 +607,7 @@ function initProduct() {
+     function renderPhotoPreview() {
+       photoPreview.innerHTML = reviewPhotos.map((src, i) => `
+         <div style="position:relative;display:inline-block;margin:4px;">
+-          <img src="${src}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--rosa);">
++          <img src="${App.esc(src)}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--rosa);">
+           <button type="button" onclick="removeReviewPhoto(${i})"
+             style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:white;border:none;cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center;">Ô£ò</button>
+         </div>`).join('');
+@@ -660,7 +660,7 @@ function initProduct() {
+       if (!reviewVideo) { videoPreview.innerHTML = ''; return; }
+       videoPreview.innerHTML = `
+         <div style="position:relative;margin-bottom:10px;">
+-          <video src="${reviewVideo}" controls
++          <video src="${App.esc(reviewVideo)}" controls
+             style="width:100%;max-height:200px;border-radius:10px;object-fit:cover;border:2px solid var(--rosa);"></video>
+           <button type="button" onclick="removeReviewVideo()"
+             style="position:absolute;top:8px;right:8px;background:#ef4444;color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.3);">Ô£ò</button>
+@@ -758,9 +758,9 @@ function initProduct() {
+           
+           <div class="card-img-slider">
+             ${imgs.map(url => `
+-              <a href="product.html?id=${p.id}" class="card-img-slide" onclick="${clickTrack}">
++              <a href="product.html?id=${App.esc(p.id)}" class="card-img-slide" onclick="${clickTrack}">
+                 <img class="img-skeleton"
+-                     data-lazy-src="${url}"
++                     data-lazy-src="${App.esc(url)}"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
+                      alt="${App.sanitize(p.name)}">
+               </a>
+@@ -769,7 +769,7 @@ function initProduct() {
+           </div>
+ 
+           <div class="temu-card-body">
+-            <a href="product.html?id=${p.id}" class="product-title line-clamp-2" onclick="${clickTrack}">
++            <a href="product.html?id=${App.esc(p.id)}" class="product-title line-clamp-2" onclick="${clickTrack}">
+               ${App.sanitize(p.name)}
+             </a>
+             
+diff --git a/js/store.js b/js/store.js
+index 832bb64..a81de4f 100644
+--- a/js/store.js
++++ b/js/store.js
+@@ -28,7 +28,7 @@ function initStore() {
+           <div class="hero-slides-container">
+             ${mainImages.map((img, i) => `
+               <div class="hero-slide ${i === 0 ? 'active' : ''}">
+-                <img src="${img}" alt="${banners.main.title}" class="hero-img">
++                <img src="${App.esc(img)}" alt="${App.esc(banners.main.title)}" class="hero-img">
+               </div>
+             `).join('')}
+           </div>
+@@ -53,7 +53,7 @@ function initStore() {
+               <p class="side-desc">${App.sanitize(banners.side1.desc)}</p>
+               <a href="index.html" class="side-link">${App.sanitize(banners.side1.linkText)}</a>
+             </div>
+-            <img src="${banners.side1.image}" alt="${banners.side1.title}" class="side-img">
++            <img src="${App.esc(banners.side1.image)}" alt="${App.esc(banners.side1.title)}" class="side-img">
+           </div>
+ 
+           <div class="side-banner">
+@@ -63,7 +63,7 @@ function initStore() {
+               <p class="side-desc">${App.sanitize(banners.side2.desc)}</p>
+               <a href="index.html" class="side-link">${App.sanitize(banners.side2.linkText)}</a>
+             </div>
+-            <img src="${banners.side2.image}" alt="${banners.side2.title}" class="side-img">
++            <img src="${App.esc(banners.side2.image)}" alt="${App.esc(banners.side2.title)}" class="side-img">
+           </div>
+         </div>
+       </div>
+@@ -177,9 +177,9 @@ function initStore() {
+           
+           <div class="card-img-slider">
+             ${imgs.map(url => `
+-              <a href="product.html?id=${product.id}" class="card-img-slide" onclick="${clickTrack}">
++              <a href="product.html?id=${App.esc(product.id)}" class="card-img-slide" onclick="${clickTrack}">
+                 <img class="img-skeleton"
+-                     data-lazy-src="${url}"
++                     data-lazy-src="${App.esc(url)}"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
+                      alt="${App.sanitize(product.name)}">
+               </a>
+@@ -188,7 +188,7 @@ function initStore() {
+           </div>
+ 
+           <div class="temu-card-body">
+-            <a href="product.html?id=${product.id}" class="product-title line-clamp-2" onclick="${clickTrack}">
++            <a href="product.html?id=${App.esc(product.id)}" class="product-title line-clamp-2" onclick="${clickTrack}">
+               ${App.sanitize(product.name)}
+             </a>
+             
+diff --git a/supabase_schema.sql b/supabase_schema.sql
+index 93a3ff5..cbc7a90 100644
+--- a/supabase_schema.sql
++++ b/supabase_schema.sql
+@@ -37,13 +37,12 @@ CREATE TABLE IF NOT EXISTS orders (
+     id TEXT PRIMARY KEY,
+     date TIMESTAMPTZ DEFAULT NOW(),
+     status TEXT DEFAULT 'pendiente',
+-    customer_name TEXT,
+-    customer_email TEXT,
+     items JSONB DEFAULT '[]',
+     subtotal NUMERIC,
+-    shipping_cost NUMERIC,
+-    total NUMERIC,
++    shipping NUMERIC,
+     shipping_type TEXT,
++    total NUMERIC,
++    customer JSONB DEFAULT '{}',
+     created_at TIMESTAMPTZ DEFAULT NOW()
+ );
+ 
+@@ -88,6 +87,7 @@ CREATE POLICY "Categor├¡as: Solo Admin" ON categories FOR ALL USING (auth.jwt()
+ CREATE POLICY "Pedidos: Clientes pueden insertar" ON orders FOR INSERT WITH CHECK (true);
+ CREATE POLICY "Pedidos: Lectura solo por Admin" ON orders FOR SELECT USING (auth.jwt() ->> 'email' = 'l272727d@gmail.com');
+ CREATE POLICY "Pedidos: Gesti├│n solo por Admin" ON orders FOR UPDATE USING (auth.jwt() ->> 'email' = 'l272727d@gmail.com');
++CREATE POLICY "Pedidos: Eliminaci├│n solo por Admin" ON orders FOR DELETE USING (auth.jwt() ->> 'email' = 'l272727d@gmail.com');
+ 
+ -- 4. Pol├¡ticas de CLIENTES
+ CREATE POLICY "Clientes: Solo Admin puede ver lista" ON customers FOR SELECT USING (auth.jwt() ->> 'email' = 'l272727d@gmail.com');
+@@ -106,3 +106,32 @@ CREATE POLICY "Banners: Solo Admin" ON banners FOR ALL USING (auth.jwt() ->> 'em
+ ALTER PUBLICATION supabase_realtime ADD TABLE products;
+ ALTER PUBLICATION supabase_realtime ADD TABLE categories;
+ ALTER PUBLICATION supabase_realtime ADD TABLE banners;
++
++-- 7. FUNCIONES DE AUTENTICACI├ôN SEGURA PARA CLIENTES (RPC)
++-- Permiten el login y la verificaci├│n de correos sin exponer la tabla completa.
++
++CREATE OR REPLACE FUNCTION check_customer_login(p_email TEXT, p_password_hash TEXT)
++RETURNS TABLE (
++    id TEXT,
++    name TEXT,
++    email TEXT,
++    phone TEXT,
++    address TEXT,
++    registered_at TIMESTAMPTZ
++) SECURITY DEFINER AS $$
++BEGIN
++    RETURN QUERY
++    SELECT c.id, c.name, c.email, c.phone, c.address, c.registered_at
++    FROM customers c
++    WHERE LOWER(c.email) = LOWER(p_email) AND c.password = p_password_hash;
++END;
++$$ LANGUAGE plpgsql;
++
++CREATE OR REPLACE FUNCTION check_email_exists(p_email TEXT)
++RETURNS BOOLEAN SECURITY DEFINER AS $$
++BEGIN
++    RETURN EXISTS (
++        SELECT 1 FROM customers WHERE LOWER(email) = LOWER(p_email)
++    );
++END;
++$$ LANGUAGE plpgsql;

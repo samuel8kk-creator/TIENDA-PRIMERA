@@ -78,8 +78,12 @@ const Analytics = {
     },
 
     getSession() {
-        const s = sessionStorage.getItem(this.SESSION_KEY);
-        return s ? JSON.parse(s) : null;
+        try {
+            const s = sessionStorage.getItem(this.SESSION_KEY);
+            return s ? JSON.parse(s) : null;
+        } catch {
+            return null;
+        }
     },
 
     endSession() {
