@@ -537,7 +537,7 @@ function initAdmin() {
                     <span>Subtotal</span><span>${App.formatPrice(order.subtotal || 0)}</span>
                   </div>
                   <div style="display:flex;justify-content:space-between;font-size:0.84rem;">
-                    <span>${envioLabel}</span><span>${App.formatPrice(order.shipping || 0)}</span>
+                    <span>${envioLabel}</span><span>${order.shipping > 0 ? App.formatPrice(order.shipping) : 'A convenir'}</span>
                   </div>
                   <div style="display:flex;justify-content:space-between;font-size:1rem;font-weight:800;padding-top:6px;border-top:2px solid var(--borde);margin-top:4px;">
                     <span>TOTAL</span><span style="color:var(--rosa-dark);">${App.formatPrice(order.total || 0)}</span>

@@ -1215,20 +1215,22 @@ const App = {
             }
         });
 
-        const shipping = shippingType === 'santo-domingo' ? this.SHIPPING.SANTO_DOMINGO : this.SHIPPING.EXTERIOR;
         const shippingLabel = shippingType === 'santo-domingo' ? 'Santo Domingo' : 'Exterior/Provincias';
-        const total = subtotal + shipping;
+        const total = subtotal;
 
         message += `────────────\n`;
         message += `📦 *Subtotal:* ${this.formatPrice(subtotal)}\n`;
-        message += `🚚 *Envío (${shippingLabel}):* ${this.formatPrice(shipping)}\n`;
+        message += `🚚 *Envío (${shippingLabel}):* A convenir\n`;
         message += `💰 *TOTAL A PAGAR:* ${this.formatPrice(total)}\n\n`;
 
+        const info = window._checkoutInfo || {};
         const user = this.getCurrentUser();
-        if (user) {
-            message += `👤 *Cliente:* ${user.name}\n`;
-            message += `📧 ${user.email}\n`;
-            if (user.phone) message += `📱 ${user.phone}\n`;
+
+        if (info.name || user) {
+            message += `👤 *Cliente:* ${info.name || (user ? user.name : 'Anónimo')}\n`;
+            if (info.city) message += `📍 *Dirección/Provincia:* ${info.city}\n`;
+            if (user && user.email) message += `📧 ${user.email}\n`;
+            if (info.phone || (user && user.phone)) message += `📱 ${info.phone || user.phone}\n`;
         }
 
         message += `\n¡Gracias por su compra! 🌸`;

@@ -217,12 +217,12 @@ function initCart() {
                 <div class="shipping-card selected" id="sc-sd" onclick="window.selectShippingCard('santo-domingo')">
                   <span class="sc-emoji">🛵</span>
                   <div class="sc-label">Santo Domingo</div>
-                  <div class="sc-price">${App.formatPrice(App.SHIPPING.SANTO_DOMINGO)}</div>
+                  <div class="sc-price">A convenir</div>
                 </div>
                 <div class="shipping-card" id="sc-ext" onclick="window.selectShippingCard('exterior')">
                   <span class="sc-emoji">🚚</span>
                   <div class="sc-label">Provincias</div>
-                  <div class="sc-price">${App.formatPrice(App.SHIPPING.EXTERIOR)}</div>
+                  <div class="sc-price">A convenir</div>
                 </div>
               </div>
               <div class="cm-total-preview">
@@ -345,10 +345,10 @@ function initCart() {
       const p = products.find(pr => pr.id === item.productId);
       return s + (p ? p.price * item.qty : 0);
     }, 0);
-    const shipping = type === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
+    
     document.getElementById('cm-total-subtotal').textContent = App.formatPrice(subtotal);
-    document.getElementById('cm-total-shipping').textContent = App.formatPrice(shipping);
-    document.getElementById('cm-total-grand').textContent = App.formatPrice(subtotal + shipping);
+    document.getElementById('cm-total-shipping').textContent = 'A convenir';
+    document.getElementById('cm-total-grand').textContent = App.formatPrice(subtotal);
   };
 
   window.cmActionBtn = function() {
@@ -441,9 +441,9 @@ function initCart() {
       };
     });
 
-    const shipping = resolvedShipping === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
+    const shipping = 0; // A convenir
     const subtotal = orderItems.reduce((s, i) => s + i.subtotal, 0);
-    const total = subtotal + shipping;
+    const total = subtotal;
     
     const info = window._checkoutInfo || {};
 
