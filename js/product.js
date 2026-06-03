@@ -342,8 +342,8 @@ function initProduct() {
     renderAvailableColors(null);
   }
 
-  // ── Add to Cart ──
-  document.getElementById('btn-add-to-cart').addEventListener('click', () => {
+  // ── Add to Cart (Soft Wall) ──
+  document.getElementById('btn-add-to-cart').addEventListener('click', async () => {
     if (stock <= 0) {
       App.showToast('Lo sentimos, este producto está agotado', 'error');
       return;
@@ -361,6 +361,22 @@ function initProduct() {
       setTimeout(() => document.querySelector('.color-selector-wrap').classList.remove('error-shake'), 500);
       App.showToast('Por favor selecciona un color', 'error');
       return;
+    }
+
+    // Check auth for Soft Wall
+    const session = await App.getUserSession();
+    if (!session) {
+        // Save intent
+        const intent = {
+            productId, quantity,
+            size: selectedSize,
+            color: selectedColor,
+            timestamp: Date.now()
+        };
+        sessionStorage.setItem('ld_pending_cart_item', JSON.stringify(intent));
+        App.showToast('Inicia sesión para añadir al carrito 🔒', 'info');
+        setTimeout(() => window.location.href = 'login.html', 1000);
+        return;
     }
 
     Analytics.trackAddToCart(productId, quantity, selectedSize, selectedColor);
@@ -745,8 +761,8 @@ function initProduct() {
 
     html += similar.map(p => {
       const imgs = p.images && p.images.length > 0 ? p.images : [p.image];
-      const nameEscaped = App.sanitize(p.name).replace(/'/g, "\\'");
-      const clickTrack = `Analytics.trackProductClick('${p.id}', '${nameEscaped}')`;
+      const nameEscaped = App.sanitize(p.name).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      const clickTrack = `Analytics.trackProductClick('${App.sanitize(p.id)}', '${nameEscaped}')`;
       
       let soldCount = p.stock ? p.stock * 3 + 12 : 124;
       if (soldCount > 999) soldCount = Math.floor(soldCount/1000) + 'k';
@@ -754,13 +770,13 @@ function initProduct() {
 
       return `
         <div class="product-card temu-card">
-          ${p.badge ? `<span class="badge ${p.badgeType === 'discount' ? 'badge-discount' : 'badge-featured'}">${p.badge}</span>` : ''}
+          ${p.badge ? `<span class="badge ${p.badgeType === 'discount' ? 'badge-discount' : 'badge-featured'}">${App.sanitize(p.badge)}</span>` : ''}
           
           <div class="card-img-slider">
             ${imgs.map(url => `
-              <a href="product.html?id=${p.id}" class="card-img-slide" onclick="${clickTrack}">
+              <a href="product.html?id=${App.sanitize(p.id)}" class="card-img-slide" onclick="${clickTrack}">
                 <img class="img-skeleton"
-                     data-lazy-src="${url}"
+                     data-lazy-src="${encodeURI(url)}"
                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
                      alt="${App.sanitize(p.name)}">
               </a>

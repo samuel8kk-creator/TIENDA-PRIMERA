@@ -163,8 +163,8 @@ function initStore() {
 
     grid.innerHTML = filtered.map((product) => {
       const imgs = product.images && product.images.length > 0 ? product.images : [product.image];
-      const nameEscaped = App.sanitize(product.name).replace(/'/g, "\\'");
-      const clickTrack = `Analytics.trackProductClick('${product.id}', '${nameEscaped}')`;
+      const nameEscaped = App.sanitize(product.name).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      const clickTrack = `Analytics.trackProductClick('${App.sanitize(product.id)}', '${nameEscaped}')`;
       
       // Calculate a fake review stat for the "Temu feel"
       let soldCount = product.stock ? product.stock * 3 + 12 : 124;
@@ -173,13 +173,13 @@ function initStore() {
 
       return `
         <div class="product-card temu-card">
-          ${product.badge ? `<span class="badge ${product.badgeType === 'discount' ? 'badge-discount' : 'badge-featured'}">${product.badge}</span>` : ''}
+          ${product.badge ? `<span class="badge ${product.badgeType === 'discount' ? 'badge-discount' : 'badge-featured'}">${App.sanitize(product.badge)}</span>` : ''}
           
           <div class="card-img-slider">
             ${imgs.map(url => `
-              <a href="product.html?id=${product.id}" class="card-img-slide" onclick="${clickTrack}">
+              <a href="product.html?id=${App.sanitize(product.id)}" class="card-img-slide" onclick="${clickTrack}">
                 <img class="img-skeleton"
-                     data-lazy-src="${url}"
+                     data-lazy-src="${encodeURI(url)}"
                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
                      alt="${App.sanitize(product.name)}">
               </a>

@@ -5,9 +5,11 @@
 ## ✨ Características Principales
 
 - **🛒 Storefront Moderno:** Interfaz tipo Temu/Shein con carga perezosa de imágenes y diseño responsivo.
-- **🔐 Seguridad Avanzada:** Autenticación profesional con **Supabase Auth** y protección contra XSS mediante delegación de eventos.
+- **🔐 Seguridad Avanzada:** Autenticación profesional con **Supabase Auth**, protección robusta contra XSS y sesiones asíncronas seguras.
+- **🚧 Flujo "Soft Wall":** Experiencia de usuario optimizada donde el login solo es obligatorio para añadir al carrito o realizar el checkout (inspirado en Temu/Shein).
 - **📦 Gestión de Inventario:** Panel administrativo completo para gestionar productos, categorías y banners en tiempo real.
 - **🏭 Control de Proveedores:** Módulo exclusivo para gestionar costos, ganancias netas y vinculación de productos con proveedores.
+- **🗺️ Logística Detallada:** Esquema de perfiles preparado para envíos internacionales y locales con referencias precisas.
 - **💬 Reseñas Reales:** Sistema de reseñas con fotos, videos y encuestas de tallas (Fit Survey).
 - **📊 Analíticas:** Seguimiento de clics, búsquedas y conversiones.
 
