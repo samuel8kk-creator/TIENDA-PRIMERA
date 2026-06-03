@@ -404,11 +404,17 @@ const App = {
         window.addEventListener('online', () => {
             this.isOnline = true;
             this.showToast('¡De vuelta en línea! 🌐', 'success');
+            document.body.classList.remove('is-offline');
         });
         window.addEventListener('offline', () => {
             this.isOnline = false;
             this.showToast('Sin conexión. Modo offline activado 📴', 'info');
+            document.body.classList.add('is-offline');
         });
+        if (!navigator.onLine) {
+            this.isOnline = false;
+            document.body.classList.add('is-offline');
+        }
     },
 
     // ── Init ──
@@ -1218,6 +1224,9 @@ const App = {
             <!-- Live Search Results Dropdown -->
             <div id="search-results-header" class="search-results-dropdown hidden"></div>
           </div>
+
+          <!-- Offline Badge -->
+          <div class="offline-badge">Trabajando en modo local 📴</div>
 
           <div class="header-actions">
             ${user

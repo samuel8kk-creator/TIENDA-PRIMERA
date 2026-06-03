@@ -3946,3 +3946,26 @@ textarea:focus {
     bottom: 90px;
   }
 }
+
+/* ── Offline Management ── */
+.offline-badge {
+  display: none;
+  background: var(--warning-light);
+  color: var(--warning);
+  border: 1px solid var(--warning);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  animation: pulse 2s infinite;
+}
+
+body.is-offline .offline-badge {
+  display: block;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
