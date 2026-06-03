@@ -5,13 +5,14 @@
 ## ✨ Características Principales
 
 - **🛒 Storefront Moderno:** Interfaz tipo Temu/Shein con carga perezosa de imágenes y diseño responsivo.
-- **🔐 Seguridad Avanzada:** Autenticación profesional con **Supabase Auth**, protección robusta contra XSS y sesiones asíncronas seguras.
-- **🚧 Flujo "Soft Wall":** Experiencia de usuario optimizada donde el login solo es obligatorio para añadir al carrito o realizar el checkout (inspirado en Temu/Shein).
-- **📦 Gestión de Inventario:** Panel administrativo completo para gestionar productos, categorías y banners en tiempo real.
-- **🏭 Control de Proveedores:** Módulo exclusivo para gestionar costos, ganancias netas y vinculación de productos con proveedores.
-- **🗺️ Logística Detallada:** Esquema de perfiles preparado para envíos internacionales y locales con referencias precisas.
-- **💬 Reseñas Reales:** Sistema de reseñas con fotos, videos y encuestas de tallas (Fit Survey).
-- **📊 Analíticas:** Seguimiento de clics, búsquedas y conversiones.
+- **🔐 Seguridad de Grado Senior:** Sanitización universal contra XSS, sesiones asíncronas con Supabase Auth SDK y mapeo de datos seguro (camelCase to snake_case).
+- **🚧 Flujo "Soft Wall" Premium:** Navegación libre con muro de conversión inteligente. El login es obligatorio solo para añadir al carrito o checkout, preservando la intención de compra.
+- **🌙 Sleek Dark Mode:** Interfaz adaptativa (Deep Indigo) con persistencia de tema y alternador estético.
+- **⚡ Rendimiento Optimizado:** Carga perezosa de imágenes, efectos Shimmer en esqueletos y caché inteligente (TTL 5 min) para minimizar llamadas a Supabase.
+- **🔄 Carrito Multidispositivo:** Sincronización en tiempo real del carrito entre dispositivos para usuarios autenticados.
+- **🛍️ Checkout Profesional:** Proceso de pago en 2 pasos (Información -> Envío interactivo) antes de la redirección a WhatsApp.
+- **📦 Gestión Pro:** Panel administrativo con visualización de KPIs y gráficas SVG de tendencias de tráfico.
+- **🗺️ Logística Avanzada:** Perfiles de usuario con campos detallados para envíos nacionales e internacionales.
 
 ## 🛠️ Tecnologías Utilizadas
 
