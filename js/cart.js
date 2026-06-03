@@ -78,8 +78,7 @@ function initCart() {
       `;
     }).join('');
 
-    const shipping = shippingType === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
-    const total = subtotal + shipping;
+    const total = subtotal;
 
     container.innerHTML = `
       <div class="cart-layout">
@@ -100,25 +99,25 @@ function initCart() {
               <input type="radio" name="shipping" value="santo-domingo" ${shippingType === 'santo-domingo' ? 'checked' : ''}>
               <div>
                 <strong>Santo Domingo</strong>
-                <div style="font-size: 0.85rem; color: var(--texto-light);">${App.formatPrice(App.SHIPPING.SANTO_DOMINGO)}</div>
+                <div style="font-size: 0.85rem; color: var(--texto-light);">A convenir</div>
               </div>
             </div>
             <div class="shipping-option ${shippingType === 'exterior' ? 'selected' : ''}" onclick="setShipping('exterior')">
               <input type="radio" name="shipping" value="exterior" ${shippingType === 'exterior' ? 'checked' : ''}>
               <div>
                 <strong>Exterior / Provincias</strong>
-                <div style="font-size: 0.85rem; color: var(--texto-light);">${App.formatPrice(App.SHIPPING.EXTERIOR)}</div>
+                <div style="font-size: 0.85rem; color: var(--texto-light);">A convenir</div>
               </div>
             </div>
           </div>
 
           <div class="cart-summary-row">
             <span>Envío</span>
-            <span>${App.formatPrice(shipping)}</span>
+            <span>A convenir</span>
           </div>
 
           <div class="cart-summary-row total">
-            <span>Total</span>
+            <span>Total (sin envío)</span>
             <span>${App.formatPrice(total)}</span>
           </div>
 
