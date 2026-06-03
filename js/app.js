@@ -69,14 +69,19 @@ const App = {
                 shipping_type: data.shippingType
             };
         }
-        if (col === 'customers') {
+        if (col === 'customers' || col === 'profiles') {
             return {
                 id: data.id,
-                name: data.name,
+                full_name: data.name || data.fullName,
                 email: data.email,
                 password: data.password,
-                phone: data.phone,
-                address: data.address,
+                phone_number: data.phone || data.phoneNumber,
+                province: data.province,
+                city: data.city,
+                street_name: data.streetName,
+                house_number: data.houseNumber,
+                postal_code: data.postalCode,
+                address_references: data.addressReferences,
                 registered_at: data.registered
             };
         }
@@ -130,14 +135,21 @@ const App = {
                 shippingType: data.shipping_type
             };
         }
-        if (col === 'customers') {
+        if (col === 'customers' || col === 'profiles') {
             return {
                 id: data.id,
-                name: data.name,
+                name: data.full_name || data.name,
+                fullName: data.full_name,
                 email: data.email,
                 password: data.password,
-                phone: data.phone,
-                address: data.address,
+                phone: data.phone_number || data.phone,
+                phoneNumber: data.phone_number,
+                province: data.province,
+                city: data.city,
+                streetName: data.street_name,
+                houseNumber: data.house_number,
+                postalCode: data.postal_code,
+                addressReferences: data.address_references,
                 registered: data.registered_at
             };
         }
