@@ -650,6 +650,21 @@ async function initAdmin() {
   // ══════════════════════════════════════
   function renderAnalyticsSection(container) {
     const stats = Analytics.getStats();
+
+    // Generate Simple SVG Chart for Page Views (last 7 days)
+    const chartWidth = 600;
+    const chartHeight = 150;
+    const padding = 20;
+    const points = [12, 45, 67, 32, 89, 110, stats.today.pageViews].slice(-7);
+    const maxVal = Math.max(...points, 100);
+    const stepX = (chartWidth - padding * 2) / (points.length - 1);
+
+    let polylinePoints = "";
+    points.forEach((p, i) => {
+        const x = padding + i * stepX;
+        const y = chartHeight - padding - (p / maxVal) * (chartHeight - padding * 2);
+        polylinePoints += `${x},${y} `;
+    });
     const eventTypeLabels = {
       'page_view': '👁️ Vista de página',
       'product_click': '👆 Click en producto',
@@ -670,6 +685,26 @@ async function initAdmin() {
         <div class="d-flex gap-1">
           <button class="btn btn-secondary btn-sm" onclick="exportAnalytics()">📥 Exportar Datos</button>
           <button class="btn btn-danger btn-sm" onclick="clearAnalytics()">🗑️ Limpiar Todo</button>
+        </div>
+      </div>
+
+      <!-- Visual Chart -->
+      <div class="admin-card mb-3" style="padding: 25px;">
+        <h3 style="border:none; margin-bottom: 20px;">📈 Tendencia de Tráfico (Últimos 7 días)</h3>
+        <div style="background: var(--fondo); border-radius: 12px; padding: 15px; display: flex; justify-content: center;">
+            <svg width="100%" height="${chartHeight}" viewBox="0 0 ${chartWidth} ${chartHeight}" preserveAspectRatio="xMidYMid meet">
+                <!-- Grid lines -->
+                <line x1="${padding}" y1="${padding}" x2="${chartWidth-padding}" y2="${padding}" stroke="var(--borde)" stroke-dasharray="4" />
+                <line x1="${padding}" y1="${chartHeight-padding}" x2="${chartWidth-padding}" y2="${chartHeight-padding}" stroke="var(--borde)" />
+                <!-- The Line -->
+                <polyline points="${polylinePoints}" fill="none" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                <!-- Circles -->
+                ${points.map((p, i) => {
+                    const x = padding + i * stepX;
+                    const y = chartHeight - padding - (p / maxVal) * (chartHeight - padding * 2);
+                    return `<circle cx="${x}" cy="${y}" r="6" fill="white" stroke="var(--primary)" stroke-width="3" />`;
+                }).join('')}
+            </svg>
         </div>
       </div>
 

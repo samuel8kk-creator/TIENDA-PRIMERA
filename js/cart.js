@@ -94,41 +94,88 @@ function initCart() {
             <span>${App.formatPrice(subtotal)}</span>
           </div>
 
-          <div class="shipping-selector">
-            <label style="font-size: 0.88rem; font-weight: 500; margin-bottom: 8px; display: block;">📦 Zona de Envío</label>
-            <div class="shipping-option ${shippingType === 'santo-domingo' ? 'selected' : ''}" onclick="setShipping('santo-domingo')">
-              <input type="radio" name="shipping" value="santo-domingo" ${shippingType === 'santo-domingo' ? 'checked' : ''}>
-              <div>
-                <strong>Santo Domingo</strong>
-                <div style="font-size: 0.85rem; color: var(--texto-light);">${App.formatPrice(App.SHIPPING.SANTO_DOMINGO)}</div>
-              </div>
-            </div>
-            <div class="shipping-option ${shippingType === 'exterior' ? 'selected' : ''}" onclick="setShipping('exterior')">
-              <input type="radio" name="shipping" value="exterior" ${shippingType === 'exterior' ? 'checked' : ''}>
-              <div>
-                <strong>Exterior / Provincias</strong>
-                <div style="font-size: 0.85rem; color: var(--texto-light);">${App.formatPrice(App.SHIPPING.EXTERIOR)}</div>
-              </div>
-            </div>
+          <div class="cart-summary-row total" style="margin-bottom: 20px;">
+            <span>Subtotal estimado</span>
+            <span>${App.formatPrice(subtotal)}</span>
           </div>
 
-          <div class="cart-summary-row">
-            <span>Envío</span>
-            <span>${App.formatPrice(shipping)}</span>
-          </div>
-
-          <div class="cart-summary-row total">
-            <span>Total</span>
-            <span>${App.formatPrice(total)}</span>
-          </div>
-
-          <button class="btn btn-whatsapp btn-block mt-2" onclick="finalizarPedido()">
-            📱 Finalizar Pedido por WhatsApp
+          <button class="btn btn-primary btn-block mt-2" onclick="openCheckoutStepper()">
+            🛍️ Continuar al Pago
           </button>
 
           <a href="index.html" class="btn btn-secondary btn-block mt-1" style="text-align: center;">
             ← Seguir Comprando
           </a>
+        </div>
+      </div>
+
+      <!-- Checkout Stepper Modal -->
+      <div id="checkout-modal" class="modal-overlay">
+        <div class="modal">
+          <div class="modal-header">
+            <h2>Finalizar Compra</h2>
+            <button class="modal-close" onclick="closeCheckoutStepper()">✕</button>
+          </div>
+
+          <div class="checkout-stepper">
+            <div class="stepper-header">
+              <div class="step-item active" id="step-dot-1">1</div>
+              <div class="step-item" id="step-dot-2">2</div>
+            </div>
+
+            <!-- Step 1: Info -->
+            <div class="checkout-step active" id="checkout-step-1">
+              <h3 style="margin-bottom: 15px;">Verifica tus datos</h3>
+              <div class="form-group">
+                <label>Nombre Completo</label>
+                <input type="text" id="chk-name" value="${App.getCurrentUser()?.name || ''}" placeholder="Tu nombre">
+              </div>
+              <div class="form-group">
+                <label>Teléfono (WhatsApp)</label>
+                <input type="tel" id="chk-phone" value="${App.getCurrentUser()?.phone || ''}" placeholder="+1 8xx-xxx-xxxx">
+              </div>
+              <div class="form-group">
+                <label>Provincia / Ciudad</label>
+                <input type="text" id="chk-province" value="${App.getCurrentUser()?.province || ''}" placeholder="Ej: Santo Domingo">
+              </div>
+              <button class="btn btn-primary btn-block" onclick="nextCheckoutStep()">Siguiente ➔</button>
+            </div>
+
+            <!-- Step 2: Shipping -->
+            <div class="checkout-step" id="checkout-step-2">
+              <h3 style="margin-bottom: 15px;">Selecciona método de envío</h3>
+
+              <div class="shipping-card ${shippingType === 'santo-domingo' ? 'selected' : ''}" onclick="setCheckoutShipping('santo-domingo')">
+                <div class="shipping-icon">🛵</div>
+                <div class="shipping-info">
+                  <strong>Santo Domingo</strong>
+                  <span>Entrega rápida el mismo día</span>
+                </div>
+                <div style="font-weight: 700;">${App.formatPrice(App.SHIPPING.SANTO_DOMINGO)}</div>
+              </div>
+
+              <div class="shipping-card ${shippingType === 'exterior' ? 'selected' : ''}" onclick="setCheckoutShipping('exterior')">
+                <div class="shipping-icon">🚚</div>
+                <div class="shipping-info">
+                  <strong>Exterior / Provincias</strong>
+                  <span>Envío seguro vía transporte</span>
+                </div>
+                <div style="font-weight: 700;">${App.formatPrice(App.SHIPPING.EXTERIOR)}</div>
+              </div>
+
+              <div class="cart-summary-row total" style="margin: 20px 0; border-top: 1px solid var(--borde); padding-top: 15px;">
+                <span>Total Final</span>
+                <span id="chk-total-display">${App.formatPrice(total)}</span>
+              </div>
+
+              <div class="d-flex gap-1">
+                <button class="btn btn-secondary" onclick="prevCheckoutStep()" style="flex: 1;">Atrás</button>
+                <button class="btn btn-whatsapp" onclick="finalizarPedido()" style="flex: 2;">
+                  Completar por WhatsApp 📱
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -154,9 +201,40 @@ function initCart() {
     App.showToast('Producto eliminado del carrito', 'info');
   };
 
-  window.setShipping = function (type) {
+  window.openCheckoutStepper = function() {
+    document.getElementById('checkout-modal').classList.add('active');
+  };
+
+  window.closeCheckoutStepper = function() {
+    document.getElementById('checkout-modal').classList.remove('active');
+  };
+
+  window.nextCheckoutStep = function() {
+    const name = document.getElementById('chk-name').value;
+    const phone = document.getElementById('chk-phone').value;
+    if (!name || !phone) return App.showToast('Por favor completa tus datos', 'error');
+
+    document.getElementById('checkout-step-1').classList.remove('active');
+    document.getElementById('checkout-step-2').classList.add('active');
+    document.getElementById('step-dot-2').classList.add('active');
+  };
+
+  window.prevCheckoutStep = function() {
+    document.getElementById('checkout-step-2').classList.remove('active');
+    document.getElementById('checkout-step-1').classList.add('active');
+    document.getElementById('step-dot-2').classList.remove('active');
+  };
+
+  window.setCheckoutShipping = function(type) {
     shippingType = type;
-    renderCart();
+    const cards = document.querySelectorAll('.shipping-card');
+    cards[0].classList.toggle('selected', type === 'santo-domingo');
+    cards[1].classList.toggle('selected', type === 'exterior');
+
+    // Update total
+    const subtotal = App.getCartTotal();
+    const shipping = type === 'santo-domingo' ? App.SHIPPING.SANTO_DOMINGO : App.SHIPPING.EXTERIOR;
+    document.getElementById('chk-total-display').textContent = App.formatPrice(subtotal + shipping);
   };
 
   window.finalizarPedido = function () {
@@ -203,6 +281,11 @@ function initCart() {
     const total = subtotal + shipping;
     const user = App.getCurrentUser();
 
+    // Update logistics data if changed in stepper
+    const chkName = document.getElementById('chk-name').value;
+    const chkPhone = document.getElementById('chk-phone').value;
+    const chkProvince = document.getElementById('chk-province').value;
+
     // Save order to localStorage
     App.saveOrder({
       items: orderItems,
@@ -210,7 +293,12 @@ function initCart() {
       shipping,
       shippingType,
       total,
-      customer: user ? { name: user.name, email: user.email, phone: user.phone || null } : null
+      customer: {
+        name: chkName || user?.name || 'Cliente',
+        email: user?.email || '',
+        phone: chkPhone || user?.phone || '',
+        province: chkProvince
+      }
     });
 
     // Track checkout

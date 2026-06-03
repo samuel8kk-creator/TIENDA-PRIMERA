@@ -23,6 +23,13 @@ const App = {
     supabase: null,
     isSyncing: false,
     isReady: false,
+    isOnline: true,
+
+    // Cache Config
+    CACHE: {
+        TIMESTAMP: 'ld_sync_timestamp',
+        TTL: 5 * 60 * 1000 // 5 minutos
+    },
 
     // Mapper between JS (camelCase) and DB (snake_case)
     _mapToDB(col, data) {
@@ -82,6 +89,7 @@ const App = {
                 house_number: data.houseNumber,
                 postal_code: data.postalCode,
                 address_references: data.addressReferences,
+                cart: data.cart || [],
                 registered_at: data.registered
             };
         }
@@ -150,6 +158,7 @@ const App = {
                 houseNumber: data.house_number,
                 postalCode: data.postal_code,
                 addressReferences: data.address_references,
+                cart: data.cart || [],
                 registered: data.registered_at
             };
         }
@@ -241,6 +250,15 @@ const App = {
 
     async syncWithSupabase() {
         if (!this.supabase) return;
+
+        // Implementation of Cache TTL
+        const lastSync = localStorage.getItem(this.CACHE.TIMESTAMP);
+        const isAdmin = await this.isAdminLogged();
+        if (lastSync && (Date.now() - lastSync < this.CACHE.TTL) && !isAdmin) {
+            console.log('[App] Usando catálogo desde caché local');
+            return;
+        }
+
         this.isSyncing = true;
         try {
             const collections = ['products', 'categories', 'banners', 'orders', 'customers'];
@@ -263,9 +281,11 @@ const App = {
                 }
             });
             await Promise.all(syncPromises);
+            localStorage.setItem(this.CACHE.TIMESTAMP, Date.now());
             console.log('[App] Sincronización completa');
         } catch (e) {
             console.error('[App] Error de sincronización:', e);
+            this.showToast('Error de conexión. Trabajando en modo local 📴', 'info');
         } finally {
             this.isSyncing = false;
         }
@@ -356,8 +376,45 @@ const App = {
     WHATSAPP_NUMBER: '18496398500',
     NOTIFICATION_EMAIL: 'dye.servicioss@gmail.com',
 
+    // ── Theme Management ──
+    initTheme() {
+        const saved = localStorage.getItem('ld_theme') || 'light';
+        if (saved === 'dark') document.body.classList.add('dark-theme');
+
+        // Add floating toggle if not exists
+        if (!document.querySelector('.theme-toggle-btn')) {
+            const btn = document.createElement('div');
+            btn.className = 'theme-toggle-btn';
+            btn.innerHTML = saved === 'dark' ? '☀️' : '🌙';
+            btn.onclick = () => this.toggleTheme();
+            document.body.appendChild(btn);
+        }
+    },
+
+    toggleTheme() {
+        const isDark = document.body.classList.toggle('dark-theme');
+        const theme = isDark ? 'dark' : 'light';
+        localStorage.setItem('ld_theme', theme);
+        const btn = document.querySelector('.theme-toggle-btn');
+        if (btn) btn.innerHTML = isDark ? '☀️' : '🌙';
+    },
+
+    // ── Connectivity Management ──
+    initConnectivityListeners() {
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            this.showToast('¡De vuelta en línea! 🌐', 'success');
+        });
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+            this.showToast('Sin conexión. Modo offline activado 📴', 'info');
+        });
+    },
+
     // ── Init ──
     async init() {
+        this.initTheme();
+        this.initConnectivityListeners();
         this.initSupabase();
         if (!localStorage.getItem(this.KEYS.INITIALIZED)) {
             this.seedData();
@@ -627,9 +684,17 @@ const App = {
         localStorage.setItem(this.KEYS.CATEGORIES, JSON.stringify(categories));
     },
 
-    saveCart(cart) {
+    async saveCart(cart) {
         localStorage.setItem(this.KEYS.CART, JSON.stringify(cart));
         this.updateCartBadge();
+
+        // Cross-device Sync
+        const user = this.getCurrentUser();
+        if (user && this.supabase) {
+            try {
+                await this.supabase.from('profiles').update({ cart }).eq('id', user.id);
+            } catch (e) { console.warn('[App] Error syncing cart to cloud:', e); }
+        }
     },
 
     saveCustomers(customers) {
@@ -675,9 +740,31 @@ const App = {
     setCurrentUser(user) {
         if (user) {
             localStorage.setItem(this.KEYS.CURRENT_USER, JSON.stringify(user));
+            if (user.cart && Array.isArray(user.cart)) {
+                this.mergeCloudCart(user.cart);
+            }
         } else {
             localStorage.removeItem(this.KEYS.CURRENT_USER);
         }
+    },
+
+    mergeCloudCart(cloudCart) {
+        const localCart = this.getCart();
+        cloudCart.forEach(cloudItem => {
+            const exists = localCart.find(li =>
+                li.productId === cloudItem.productId &&
+                li.size === cloudItem.size &&
+                li.color === cloudItem.color
+            );
+            if (!exists) {
+                localCart.push(cloudItem);
+            } else {
+                // Keep the one with more qty or just cloud? Usually cloud is fresher for cross-device
+                exists.qty = Math.max(exists.qty, cloudItem.qty);
+            }
+        });
+        localStorage.setItem(this.KEYS.CART, JSON.stringify(localCart));
+        this.updateCartBadge();
     },
 
     // ── Cart Operations ──
