@@ -1446,10 +1446,53 @@ async function initAdmin() {
     const totalNet = performance.reduce((a, s) => a + s.netProfit, 0);
     const avgMargin = totalGross > 0 ? ((totalNet / totalGross) * 100).toFixed(1) : '0.0';
 
+    // Generate Simple SVG Pie Chart for Sales Distribution by Supplier
+    const pieRadius = 50;
+    const pieCenterX = 60;
+    const pieCenterY = 60;
+    let currentAngle = 0;
+    const pieColors = ['#5c35d9', '#06d6b0', '#f43f5e', '#f59e0b', '#3b82f6'];
+
+    const pieSlices = performance.filter(s => s.grossRevenue > 0).map((s, i) => {
+        const slicePct = s.grossRevenue / (totalGross || 1);
+        const sliceAngle = slicePct * 360;
+
+        // Calculate SVG arc path
+        const x1 = pieCenterX + pieRadius * Math.cos((currentAngle - 90) * Math.PI / 180);
+        const y1 = pieCenterY + pieRadius * Math.sin((currentAngle - 90) * Math.PI / 180);
+        currentAngle += sliceAngle;
+        const x2 = pieCenterX + pieRadius * Math.cos((currentAngle - 90) * Math.PI / 180);
+        const y2 = pieCenterY + pieRadius * Math.sin((currentAngle - 90) * Math.PI / 180);
+
+        const largeArcFlag = sliceAngle > 180 ? 1 : 0;
+        const pathData = `M ${pieCenterX} ${pieCenterY} L ${x1} ${y1} A ${pieRadius} ${pieRadius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+        return `<path d="${pathData}" fill="${pieColors[i % pieColors.length]}" stroke="white" stroke-width="1" />`;
+    }).join('');
+
     container.innerHTML = `
       <div class="admin-header">
         <h1>🏭 Proveedores <span style="font-size:0.7em;opacity:0.6;">(Privado)</span></h1>
         <button class="btn btn-primary" onclick="openSupplierModal()">+ Nuevo Proveedor</button>
+      </div>
+
+      <!-- Performance Distribution -->
+      <div class="admin-card mb-3" style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; align-items: center;">
+        <div style="text-align: center;">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+                ${pieSlices || `<circle cx="60" cy="60" r="50" fill="var(--fondo)" />`}
+            </svg>
+            <div style="font-size: 0.8rem; color: var(--texto-light); margin-top: 10px;">Ventas por Proveedor</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            ${performance.filter(s => s.grossRevenue > 0).slice(0, 5).map((s, i) => `
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem;">
+                    <span style="width: 12px; height: 12px; background: ${pieColors[i % pieColors.length]}; border-radius: 3px;"></span>
+                    <span style="flex: 1;">${App.esc(s.name)}</span>
+                    <span style="font-weight: 700;">${Math.round((s.grossRevenue / totalGross) * 100)}%</span>
+                </div>
+            `).join('')}
+        </div>
       </div>
 
       <!-- KPI Cards -->
