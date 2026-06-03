@@ -342,8 +342,8 @@ function initProduct() {
     renderAvailableColors(null);
   }
 
-  // ── Add to Cart ──
-  document.getElementById('btn-add-to-cart').addEventListener('click', () => {
+  // ── Add to Cart (Soft Wall) ──
+  document.getElementById('btn-add-to-cart').addEventListener('click', async () => {
     if (stock <= 0) {
       App.showToast('Lo sentimos, este producto está agotado', 'error');
       return;
@@ -361,6 +361,22 @@ function initProduct() {
       setTimeout(() => document.querySelector('.color-selector-wrap').classList.remove('error-shake'), 500);
       App.showToast('Por favor selecciona un color', 'error');
       return;
+    }
+
+    // Check auth for Soft Wall
+    const session = await App.getUserSession();
+    if (!session) {
+        // Save intent
+        const intent = {
+            productId, quantity,
+            size: selectedSize,
+            color: selectedColor,
+            timestamp: Date.now()
+        };
+        sessionStorage.setItem('ld_pending_cart_item', JSON.stringify(intent));
+        App.showToast('Inicia sesión para añadir al carrito 🔒', 'info');
+        setTimeout(() => window.location.href = 'login.html', 1000);
+        return;
     }
 
     Analytics.trackAddToCart(productId, quantity, selectedSize, selectedColor);

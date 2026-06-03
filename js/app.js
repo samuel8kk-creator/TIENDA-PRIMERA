@@ -352,6 +352,20 @@ const App = {
         }
         // Intentar sincronizar antes de renderizar si es posible
         await this.syncWithSupabase();
+
+        // ── Soft Wall Route Protection ──
+        const protectedPaths = ['cart.html', 'profile.html'];
+        const currentPath = window.location.pathname.split('/').pop();
+
+        if (protectedPaths.includes(currentPath)) {
+            const session = await this.getUserSession();
+            if (!session) {
+                // Save redirect intent
+                sessionStorage.setItem('ld_redirect_after_login', currentPath);
+                window.location.href = 'login.html';
+                return;
+            }
+        }
         
         this.updateCartBadge();
         this.initGlobalEvents();
@@ -359,6 +373,15 @@ const App = {
 
         // Emitir evento para avisar a otras partes de que la app está lista
         window.dispatchEvent(new CustomEvent('app-ready'));
+    },
+
+    async getUserSession() {
+        if (!this.supabase) return null;
+        try {
+            const { data: { session }, error } = await this.supabase.auth.getSession();
+            if (error || !session) return null;
+            return session;
+        } catch (e) { return null; }
     },
 
     initGlobalEvents() {
