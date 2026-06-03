@@ -24,6 +24,126 @@ const App = {
     isSyncing: false,
     isReady: false,
 
+    // Mapper between JS (camelCase) and DB (snake_case)
+    _mapToDB(col, data) {
+        if (!data) return data;
+        if (col === 'products') {
+            return {
+                id: data.id,
+                name: data.name,
+                description: data.description,
+                price: data.price,
+                old_price: data.oldPrice,
+                category: data.category,
+                stock: data.stock,
+                badge: data.badge,
+                badge_type: data.badgeType,
+                image: data.image,
+                images: data.images,
+                variants: data.sizeVariants,
+                reviews: data.reviews,
+                similar_ids: data.similarIds
+            };
+        }
+        if (col === 'categories') {
+            return {
+                id: data.id,
+                name: data.name,
+                emoji: data.emoji,
+                image: data.image,
+                is_active: data.isActive,
+                is_permanent: data.isPermanent
+            };
+        }
+        if (col === 'orders') {
+            return {
+                id: data.id,
+                date: data.date,
+                status: data.status,
+                customer_name: data.customer ? data.customer.name : null,
+                customer_email: data.customer ? data.customer.email : null,
+                items: data.items,
+                subtotal: data.subtotal,
+                shipping_cost: data.shipping,
+                total: data.total,
+                shipping_type: data.shippingType
+            };
+        }
+        if (col === 'customers') {
+            return {
+                id: data.id,
+                name: data.name,
+                email: data.email,
+                password: data.password,
+                phone: data.phone,
+                address: data.address,
+                registered_at: data.registered
+            };
+        }
+        return data;
+    },
+
+    _mapFromDB(col, data) {
+        if (!data) return data;
+        if (col === 'products') {
+            return {
+                id: data.id,
+                name: data.name,
+                description: data.description,
+                price: data.price,
+                oldPrice: data.old_price,
+                category: data.category,
+                stock: data.stock,
+                badge: data.badge,
+                badgeType: data.badge_type,
+                image: data.image,
+                images: data.images,
+                sizeVariants: data.variants,
+                reviews: data.reviews,
+                similarIds: data.similar_ids
+            };
+        }
+        if (col === 'categories') {
+            return {
+                id: data.id,
+                name: data.name,
+                emoji: data.emoji,
+                image: data.image,
+                isActive: data.is_active,
+                isPermanent: data.is_permanent
+            };
+        }
+        if (col === 'orders') {
+            return {
+                id: data.id,
+                date: data.date,
+                status: data.status,
+                customer: (data.customer_name || data.customer_email) ? {
+                    name: data.customer_name,
+                    email: data.customer_email,
+                    phone: data.phone
+                } : null,
+                items: data.items,
+                subtotal: data.subtotal,
+                shipping: data.shipping_cost,
+                total: data.total,
+                shippingType: data.shipping_type
+            };
+        }
+        if (col === 'customers') {
+            return {
+                id: data.id,
+                name: data.name,
+                email: data.email,
+                password: data.password,
+                phone: data.phone,
+                address: data.address,
+                registered: data.registered_at
+            };
+        }
+        return data;
+    },
+
     initSupabase() {
         if (!window.supabase || !window.SUPABASE_CONFIG) {
             console.warn('[App] Supabase no configurado o cargado');
@@ -67,7 +187,9 @@ const App = {
 
     handleRealtimeUpdate(table, payload) {
         // Skip updates we just did ourselves if syncing
-        const { eventType, new: newRecord, old: oldRecord } = payload;
+        const { eventType, new: dbRecord, old: oldDbRecord } = payload;
+        const newRecord = this._mapFromDB(table, dbRecord);
+        const oldRecord = this._mapFromDB(table, oldDbRecord);
         
         if (table === 'products') {
             let items = this.getProducts();
@@ -118,7 +240,8 @@ const App = {
                     if (col === 'banners') {
                         localStorage.setItem(storageKey, JSON.stringify(data[0].data));
                     } else {
-                        localStorage.setItem(storageKey, JSON.stringify(data));
+                        const mappedData = data.map(item => this._mapFromDB(col, item));
+                        localStorage.setItem(storageKey, JSON.stringify(mappedData));
                     }
                 } else if (error) {
                     console.warn(`[App] Error syncing ${col}:`, error.message);
@@ -143,12 +266,16 @@ const App = {
         if (!localData) return;
 
         console.log(`[App] Subiendo datos iniciales a la nube: ${col}`);
-        if (col === 'banners') {
-            await this.supabase.from(col).upsert({ id: 'main', data: localData });
-        } else {
-            // Bulk upsert
-            await this.supabase.from(col).upsert(localData);
-        }
+        try {
+            if (col === 'banners') {
+                await this.supabase.from(col).upsert({ id: 'main', data: localData });
+            } else {
+                const mappedData = Array.isArray(localData)
+                    ? localData.map(item => this._mapToDB(col, item))
+                    : this._mapToDB(col, localData);
+                await this.supabase.from(col).upsert(mappedData);
+            }
+        } catch (e) { console.error(`[App] Error uploading initial ${col}:`, e); }
     },
 
     async saveToCloud(col, data) {
@@ -156,10 +283,11 @@ const App = {
         try {
             if (col === 'banners') {
                 await this.supabase.from(col).upsert({ id: 'main', data: data });
-            } else if (data && data.id) {
-                await this.supabase.from(col).upsert(data);
-            } else if (Array.isArray(data)) {
-                await this.supabase.from(col).upsert(data);
+            } else {
+                const mappedData = Array.isArray(data)
+                    ? data.map(item => this._mapToDB(col, item))
+                    : this._mapToDB(col, data);
+                await this.supabase.from(col).upsert(mappedData);
             }
         } catch (e) { console.error('[App] Error al guardar en nube:', e); }
     },
@@ -167,7 +295,8 @@ const App = {
     async deleteFromCloud(col, id) {
         if (!this.supabase || !id) return;
         try {
-            await this.supabase.from(col).delete().match({ id: id });
+            const { error } = await this.supabase.from(col).delete().match({ id: id });
+            if (error) throw error;
         } catch (e) { console.error('[App] Error al borrar en nube:', e); }
     },
 
@@ -793,23 +922,21 @@ const App = {
         }
     },
 
-    isAdminLogged() {
+    async isAdminLogged() {
         if (!this.supabase) return false;
         
-        // Debug Bypass for Local Development
+        // Debug Bypass for Local Development (Limited)
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
         if (isLocal && localStorage.getItem('ld_admin_debug') === 'true') {
             return true;
         }
 
         try {
-            const projectId = window.SUPABASE_CONFIG.URL.split('//')[1].split('.')[0];
-            const sessionStr = localStorage.getItem(`sb-${projectId}-auth-token`);
-            if (!sessionStr) return false;
-            
-            const session = JSON.parse(sessionStr);
-            return session && session.user && session.user.email === 'l272727d@gmail.com';
+            const { data: { session }, error } = await this.supabase.auth.getSession();
+            if (error || !session) return false;
+            return session.user && session.user.email === 'l272727d@gmail.com';
         } catch(e) { 
+            console.error('[App] Error checking admin session:', e);
             return false; 
         }
     },
@@ -861,9 +988,10 @@ const App = {
 
     // ── Stars HTML Helper ──
     starsHTML(rating, showEmpty = true) {
+        const r = parseFloat(rating) || 0;
         let html = '';
-        const full = Math.floor(rating);
-        const half = rating % 1 >= 0.5 ? 1 : 0;
+        const full = Math.floor(r);
+        const half = r % 1 >= 0.5 ? 1 : 0;
         for (let i = 0; i < full; i++) html += '★';
         if (half) html += '★';
         if (showEmpty) {
@@ -971,7 +1099,7 @@ const App = {
 
           <div class="header-actions">
             ${user
-                ? `<a href="#" class="action-btn" title="${user.name}" onclick="App.logoutCustomer(); location.reload();">
+                ? `<a href="#" class="action-btn" title="${this.esc(user.name)}" onclick="App.logoutCustomer(); location.reload();">
                     <span class="icon">👤</span>
                   </a>`
                 : `<a href="login.html" class="action-btn" title="Iniciar Sesión">

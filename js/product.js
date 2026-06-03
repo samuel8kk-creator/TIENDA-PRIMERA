@@ -745,8 +745,8 @@ function initProduct() {
 
     html += similar.map(p => {
       const imgs = p.images && p.images.length > 0 ? p.images : [p.image];
-      const nameEscaped = App.sanitize(p.name).replace(/'/g, "\\'");
-      const clickTrack = `Analytics.trackProductClick('${p.id}', '${nameEscaped}')`;
+      const nameEscaped = App.sanitize(p.name).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      const clickTrack = `Analytics.trackProductClick('${App.sanitize(p.id)}', '${nameEscaped}')`;
       
       let soldCount = p.stock ? p.stock * 3 + 12 : 124;
       if (soldCount > 999) soldCount = Math.floor(soldCount/1000) + 'k';
@@ -754,13 +754,13 @@ function initProduct() {
 
       return `
         <div class="product-card temu-card">
-          ${p.badge ? `<span class="badge ${p.badgeType === 'discount' ? 'badge-discount' : 'badge-featured'}">${p.badge}</span>` : ''}
+          ${p.badge ? `<span class="badge ${p.badgeType === 'discount' ? 'badge-discount' : 'badge-featured'}">${App.sanitize(p.badge)}</span>` : ''}
           
           <div class="card-img-slider">
             ${imgs.map(url => `
-              <a href="product.html?id=${p.id}" class="card-img-slide" onclick="${clickTrack}">
+              <a href="product.html?id=${App.sanitize(p.id)}" class="card-img-slide" onclick="${clickTrack}">
                 <img class="img-skeleton"
-                     data-lazy-src="${url}"
+                     data-lazy-src="${encodeURI(url)}"
                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
                      alt="${App.sanitize(p.name)}">
               </a>
