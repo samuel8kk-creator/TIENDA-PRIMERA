@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Product Detail Page
+   Away — Product Detail Page
    Product display, quantity selector, reviews
    ================================================ */
 
@@ -32,7 +32,7 @@ function initProduct() {
   }
 
   // Update page title
-  document.title = `${product.name} - D&E Shop ✨`;
+  document.title = `${product.name} - Away ✨`;
 
   // Track product view
   Analytics.trackProductView(productId, product.name);

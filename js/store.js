@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Storefront Logic
+   Away — Storefront Logic
    Category filtering, product rendering, search
    ================================================ */
 

@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Core Application
+   Away — Core Application
    Data management, shared utilities, init
    ================================================ */
 
@@ -1063,7 +1063,7 @@ const App = {
     },
 
     sendCustomerNotification(data) {
-        const subject = encodeURIComponent('Nuevo Cliente Registrado - D&E Shop');
+        const subject = encodeURIComponent('Nuevo Cliente Registrado - Away');
         const body = encodeURIComponent(
             `Nuevo cliente registrado:\n\n` +
             `Nombre: ${data.name}\n` +
@@ -1194,7 +1194,7 @@ const App = {
     buildWhatsAppMessage(shippingType) {
         const cart = this.getCart();
         const products = this.getProducts();
-        let message = '🛍️ *PEDIDO - D&E Shop*\n\n';
+        let message = '🛍️ *PEDIDO - Away*\n\n';
         let subtotal = 0;
 
         cart.forEach((item, i) => {
@@ -1267,7 +1267,7 @@ const App = {
       <div class="header-main">
         <div class="container header-inner">
           <a href="index.html" class="logo">
-            <img src="images/logo.png" alt="D&E Shop" class="logo-img">
+            <img src="images/logo.png" alt="Away" class="logo-img">
           </a>
           
           <div class="header-search">
@@ -1359,7 +1359,7 @@ const App = {
       <div class="container">
         <div class="footer-grid">
           <div class="footer-col">
-            <h4 class="footer-title">D&E Shop</h4>
+            <h4 class="footer-title">Away</h4>
             <div class="footer-content">
               <p>Tu tienda de moda favorita con las últimas tendencias a los mejores precios.</p>
               <div class="social-links">
@@ -1398,7 +1398,7 @@ const App = {
           </div>
         </div>
         <div class="footer-bottom">
-          <p>© ${new Date().getFullYear()} D&E Shop. Todos los derechos reservados.</p>
+          <p>© ${new Date().getFullYear()} Away. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>`;

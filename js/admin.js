@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Admin Panel Logic
+   Away — Admin Panel Logic
    Login, Product CRUD, Category Toggles, Clients
    ================================================ */
 

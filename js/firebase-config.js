@@ -1,6 +1,6 @@
 /* 
   ================================================
-  D&E Shop — Firebase Config
+  Away — Firebase Config
   ================================================
   ¡Configuración automática completada!
 */

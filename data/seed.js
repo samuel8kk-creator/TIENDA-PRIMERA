@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Seed Data
+   Away — Seed Data
    Initial products, categories, and sample reviews
    ================================================ */
 

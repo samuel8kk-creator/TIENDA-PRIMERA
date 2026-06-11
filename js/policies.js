@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Legal Policies Mapping
+   Away — Legal Policies Mapping
    Handles Privacy, Returns, and Shipping content
    ================================================ */
 
@@ -23,7 +23,7 @@ function renderPolicy(key) {
             <div class="policy-header">
                 <div class="policy-icon">${content.icon}</div>
                 <h1>${content.title}</h1>
-                <p class="subtitle">D&E Shop — Compromiso con la Transparencia</p>
+                <p class="subtitle">Away — Compromiso con la Transparencia</p>
             </div>
             <div class="policy-body">
                 ${content.body}
@@ -46,7 +46,7 @@ function getPolicyContent(key) {
             body: `
                 <section>
                     <h3>Valoramos tu confianza</h3>
-                    <p>En <strong>D&E Shop</strong>, el manejo responsable de tu información es nuestra prioridad. Esta política explica cómo protegemos tus datos:</p>
+                    <p>En <strong>Away</strong>, el manejo responsable de tu información es nuestra prioridad. Esta política explica cómo protegemos tus datos:</p>
                 </section>
                 
                 <section>
@@ -86,7 +86,7 @@ function getPolicyContent(key) {
             title: 'Políticas de Cambios y Devoluciones',
             body: `
                 <section>
-                    <p>En <strong>D&E Shop</strong>, nos esforzamos por ofrecerte las últimas tendencias con la mejor relación calidad-precio. Para mantener precios competitivos y garantizar la higiene de nuestros productos, aplicamos la siguiente normativa:</p>
+                    <p>En <strong>Away</strong>, nos esforzamos por ofrecerte las últimas tendencias con la mejor relación calidad-precio. Para mantener precios competitivos y garantizar la higiene de nuestros productos, aplicamos la siguiente normativa:</p>
                 </section>
 
                 <div class="alert alert-warning" style="background: #fff9e6; border: 1px solid #ffeeba; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -102,7 +102,7 @@ function getPolicyContent(key) {
                         <li>Confirmar que la talla seleccionada es la correcta (consúltanos por WhatsApp si tienes dudas).</li>
                         <li>Verificar que los accesorios y colores sean de tu total agrado.</li>
                     </ul>
-                    <p>D&E Shop no se hace responsable por errores en la selección de productos. Una vez procesado el pago, el compromiso de compra es firme.</p>
+                    <p>Away no se hace responsable por errores en la selección de productos. Una vez procesado el pago, el compromiso de compra es firme.</p>
                 </section>
 
                 <section>

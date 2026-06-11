@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Customer Auth
+   Away — Customer Auth
    Login/Register with tabs, profile view
    ================================================ */
 
@@ -51,7 +51,7 @@ function initAuth() {
       document.getElementById('auth-page').innerHTML = `
         <div class="auth-card">
           <div style="text-align: center; margin-bottom: 8px; font-size: 2.5rem;">✨</div>
-          <h1>D&E Shop</h1>
+          <h1>Away</h1>
           <p class="subtitle">Tu tienda de moda favorita</p>
 
           <div class="auth-tabs">

@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Analytics Engine
+   Away — Analytics Engine
    User behavior tracking via localStorage
    ================================================ */
 

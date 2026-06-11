@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Blog Page Logic
+   Away — Blog Page Logic
    ================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {

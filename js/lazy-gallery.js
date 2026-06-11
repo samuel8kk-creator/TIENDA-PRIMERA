@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Lazy Gallery Engine  v2.0
+   Away — Lazy Gallery Engine  v2.0
    Security-hardened, 3G-resilient, error-tolerant
    ================================================ */
 

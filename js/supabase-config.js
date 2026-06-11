@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Supabase Configuration (Actualizado)
+   Away — Supabase Configuration (Actualizado)
    ================================================ */
 
 window.SUPABASE_CONFIG = {

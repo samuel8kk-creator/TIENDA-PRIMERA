@@ -1,5 +1,5 @@
 /* ================================================
-   D&E Shop — Cart Page Logic
+   Away — Cart Page Logic
    Cart rendering, shipping selector, WhatsApp checkout
    ================================================ */
 
